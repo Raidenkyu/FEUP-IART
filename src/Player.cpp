@@ -4,8 +4,7 @@
 
 using namespace std;
 
-Player::Player(){
-}
+Player::Player(){}
 
 string Player::play(){
     cout << "Play: ";

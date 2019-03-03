@@ -20,6 +20,7 @@ public:
     void loop();
     void printGame();
     void run();
+    bool moveRobots(std::string play);
 };
 
 #endif
