@@ -5,16 +5,17 @@ using namespace std;
 Map::Map(int num, vector<vector<char>> & charMap): 
     num(num),
     charMap(charMap),
-    AndyX(-1),
-    AndyY(-1),
-    LisaX(-1),
-    LisaY(-1),
+    AndyX(8),
+    AndyY(1),
+    LisaX(13),
+    LisaY(1),
     targetAX(-1),
     targetAY(-1),
     targetLX(-1),
     targetLY(-1) {
     for(unsigned int i = 0; i< this->charMap.size();i++){
         for(unsigned int j = 0; j < this->charMap[i].size();j++){
+            /*
             if(this->charMap[i][j] == 'A'){
                 this->AndyY = i;
                 this->AndyX = j;
@@ -22,8 +23,8 @@ Map::Map(int num, vector<vector<char>> & charMap):
             else if(this->charMap[i][j] == 'L'){
                 this->LisaY = i;
                 this->LisaX = j;
-            }
-            else if(this->charMap[i][j] == 'a'){
+            } */
+            if(this->charMap[i][j] == 'a'){
                 this->targetAY = i;
                 this->targetAX = j;
             }

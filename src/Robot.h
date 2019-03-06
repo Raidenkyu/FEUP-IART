@@ -14,6 +14,7 @@ public:
     void setPosition(int x, int y);
     int getX();
     int getY();
+    char getType();
 };
 
 #endif

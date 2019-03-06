@@ -1,4 +1,6 @@
 #include "Robot.h"
+#include<stdio.h>
+#include<ctype.h>
 
 using namespace std;
 
@@ -8,6 +10,9 @@ bool Robot::move(char direction, vector<vector<char>> map)
 {
     int xVector = 0;
     int yVector = 0;
+  
+    
+  
 
     switch (direction)
     {
@@ -28,9 +33,22 @@ bool Robot::move(char direction, vector<vector<char>> map)
         return false;
     }
 
+    
+
     while(map[this->getY()+yVector][this->getX()+xVector] == ' '){
-        this->x += xVector;
+
+ this->x += xVector;
         this->y += yVector;
+       
+
+    }
+
+      if(toupper(map[this->getY()+yVector][this->getX()+xVector]) == this->getType()){
+
+           this->x += xVector;
+        this->y += yVector;
+    map[this->getY()+yVector][this->getX()+xVector] = this->getType();
+  
     }
     return true;
 
@@ -50,4 +68,8 @@ int Robot::getX()
 int Robot::getY()
 {
     return this->y;
+}
+
+char Robot::getType(){
+    return this->type;
 }

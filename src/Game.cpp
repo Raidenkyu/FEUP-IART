@@ -4,8 +4,14 @@
 
 using namespace std;
 
-Game::Game() : level(0), player(new Player()), Andy('A'), Lisa('L')
+Game::Game(int HumanOrBot) : level(0), Andy('A'), Lisa('L')
 {
+    if(HumanOrBot == 0)
+     player = new Player();
+    
+    else if (HumanOrBot == 1)
+     player = new BotPlayer();
+
     this->loadMaps();
 }
 
