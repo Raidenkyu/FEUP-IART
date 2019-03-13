@@ -13,6 +13,7 @@ Map::Map(int num, vector<vector<char>> & charMap):
     targetAY(-1),
     targetLX(-1),
     targetLY(-1) {
+        
     for(unsigned int i = 0; i< this->charMap.size();i++){
         for(unsigned int j = 0; j < this->charMap[i].size();j++){
             /*
@@ -25,12 +26,12 @@ Map::Map(int num, vector<vector<char>> & charMap):
                 this->LisaX = j;
             } */
             if(this->charMap[i][j] == 'a'){
-                this->targetAY = i;
-                this->targetAX = j;
+                this->targetAX = i;
+                this->targetAY = j;
             }
             else if(this->charMap[i][j] == 'l'){
-                this->targetLY = i;
-                this->targetLX = j;
+                this->targetLX = i;
+                this->targetLY = j;
             }
         }
     }
