@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Map.h"
 #include "Robot.h"
+#include "BotPlayer.h"
 
 class Game {
 private:
@@ -15,7 +16,7 @@ private:
     std::vector<Map> maps;
 
 public:
-    Game();
+    Game(int HumanOrBot);
     void loadMaps();
     void loop();
     void printGame();
