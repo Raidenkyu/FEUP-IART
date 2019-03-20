@@ -2,6 +2,7 @@
 #define BOT_PLAYER_H_
 
 #include <string>
+#include "Player.h"
 
 class BotPlayer: public Player {
 public:
