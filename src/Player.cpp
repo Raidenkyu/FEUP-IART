@@ -9,6 +9,7 @@ Player::Player(){}
 string Player::play(){
     cout << "Play: ";
     string line;
+    cin.ignore();
     getline(cin,line);
     return line;
 }
