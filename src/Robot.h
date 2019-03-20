@@ -1,7 +1,10 @@
 #ifndef ROBOT_H_
 #define ROBOT_H_
 
-#include <bits/stdc++.h>
+#include <iostream>
+#include <vector>
+#include <utility>
+#include <climits>
 
 typedef unsigned int u_int;
 

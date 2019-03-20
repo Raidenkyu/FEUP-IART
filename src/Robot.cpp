@@ -1,6 +1,5 @@
 #include "Robot.h"
 
-
 using namespace std;
 
 Robot::Robot(char type) : type(type), x(-1), y(-1) {}

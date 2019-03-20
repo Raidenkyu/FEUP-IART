@@ -25,7 +25,7 @@ void Game::loadMaps()
         int sizeX,sizeY;
         maps_file >> sizeX >> sizeY;
         getline(maps_file, line);
-        for(int i=0;i<sizeX;i++)
+        for(int i=0;i<sizeY;i++)
         {
             vector<char> temp;
             matrix.push_back(temp);
@@ -35,7 +35,7 @@ void Game::loadMaps()
             getline(maps_file, line);
             for(int j=0;j<sizeX;j++)
             {
-                matrix[j].push_back(line[j]);
+                matrix[i].push_back(line[j]);
             }
         }
         Map map(0,matrix);
@@ -71,16 +71,13 @@ void Game::loop()
 void Game::printGame()
 {
     vector<vector<char>> map = this->maps[this->level].getMap();
-    map[this->Andy.getX()][this->Andy.getY()] = 'A';
-    if (this->Lisa.getX() != -1)
+    map[this->Andy.getY()][this->Andy.getX()] = 'A';
+    map[this->Lisa.getY()][this->Lisa.getX()] = 'L';
+    for (unsigned int i = 0; i < map.size(); i++)
     {
-        map[this->Lisa.getY()][this->Lisa.getX()] = 'L';
-    }
-    for (unsigned int i = 0; i < map[0].size(); i++)
-    {
-        for (unsigned int j = 0; j < map.size(); j++)
+        for (unsigned int j = 0; j < map[i].size(); j++)
         {
-            cout << map[j][i];
+            cout << map[i][j];
         }
         cout << endl;
     }
@@ -94,10 +91,10 @@ bool Game::moveRobots(string play)
     switch (robot)
     {
     case 'A':
-        return this->Andy.moveDFS(this->maps[this->level].getMap());
+        return this->Andy.move(direction,this->maps[this->level].getMap());
         break;
     case 'L':
-        return this->Lisa.moveDFS(this->maps[this->level].getMap());
+        return this->Lisa.move(direction,this->maps[this->level].getMap());
         break;
     default:
         return false;
