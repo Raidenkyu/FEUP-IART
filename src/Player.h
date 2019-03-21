@@ -23,6 +23,7 @@ protected:
 
 public:
     //Constructor
+    Player(){}
     Player(int level,Map * map);
 
     //Diz qual a posição que vai ter mas não move
