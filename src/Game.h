@@ -1,27 +1,23 @@
 #ifndef GAME_H_
 #define GAME_H_
 
-#include <vector>
 #include "Player.h"
+#include "AI.h"
+#include "Human.h"
 #include "Map.h"
 #include "Robot.h"
-#include "BotPlayer.h"
+#include "macros.h"
 
 class Game {
 private:
-    unsigned int level;
+    u_int level;
     Player * player;
-    Robot Andy;
-    Robot Lisa;
-    std::vector<Map> maps;
-
+    Map * map;
+    
 public:
-    Game(int HumanOrBot);
-    void loadMaps();
+    Game(int HumanOrBot,int level,std::string file);
+
     void loop();
-    void printGame();
-    void run();
-    bool moveRobots(std::string play);
 };
 
 #endif

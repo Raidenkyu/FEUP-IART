@@ -1,10 +1,7 @@
 #ifndef ROBOT_H_
 #define ROBOT_H_
 
-#include <iostream>
-#include <vector>
-#include <utility>
-#include <climits>
+#include "macros.h"
 
 typedef unsigned int u_int;
 

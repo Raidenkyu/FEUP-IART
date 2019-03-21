@@ -3,79 +3,7 @@
 using namespace std;
 
 Robot::Robot(char type) : type(type), x(-1), y(-1) {}
-
-std::pair<int, int> Robot::MoveTop(vector<vector<char>> map, std::pair<int, int> currentPos)
-{
-    int currentX = currentPos.first - 1;
-    int currentY = currentPos.second;
-    int size1 = (int)map.size(), size2 = (int)map[0].size();
-    while (currentX >= 0 && currentX < size1 && currentY >= 0 && currentY < size2)
-    {
-        if (map[currentX][currentY] != ' ')
-        {
-            return make_pair(currentX + 1, currentY);
-        }
-        else
-        {
-            currentX--;
-        }
-    }
-    return make_pair(currentX, currentY);
-}
-std::pair<int, int> Robot::MoveBottom(vector<vector<char>> map, std::pair<int, int> currentPos)
-{
-    int currentX = currentPos.first + 1;
-    int currentY = currentPos.second;
-    int size1 = (int)map.size(), size2 = (int)map[0].size();
-    while (currentX >= 0 && currentX < size1 && currentY >= 0 && currentY < size2)
-    {
-        if (map[currentX][currentY] != ' ')
-        {
-            return make_pair(currentX - 1, currentY);
-        }
-        else
-        {
-            currentX++;
-        }
-    }
-    return make_pair(currentX, currentY);
-}
-std::pair<int, int> Robot::MoveLeft(vector<vector<char>> map, std::pair<int, int> currentPos)
-{
-    int currentX = currentPos.first;
-    int currentY = currentPos.second - 1;
-    int size1 = (int)map.size(), size2 = (int)map[0].size();
-    while (currentX >= 0 && currentX < size1 && currentY >= 0 && currentY < size2)
-    {
-        if (map[currentX][currentY] != ' ')
-        {
-            return make_pair(currentX, currentY + 1);
-        }
-        else
-        {
-            currentY--;
-        }
-    }
-    return make_pair(currentX, currentY);
-}
-std::pair<int, int> Robot::MoveRight(vector<vector<char>> map, std::pair<int, int> currentPos)
-{
-    int currentX = currentPos.first;
-    int currentY = currentPos.second + 1;
-    int size1 = (int)map.size(), size2 = (int)map[0].size();
-    while (currentX >= 0 && currentX < size1 && currentY >= 0 && currentY < size2)
-    {
-        if (map[currentX][currentY] != ' ')
-        {
-            return make_pair(currentX, currentY - 1);
-        }
-        else
-        {
-            currentY++;
-        }
-    }
-    return make_pair(currentX, currentY);
-}
+/*
 void Robot::dfs(vector<std::vector<char>> map, pair<int, int> currentPos, int custo, vector<pair<int, int>> visited, vector<pair<int, int>> movesUntilNow)
 {
     pair<int, int> topMove = this->MoveTop(map, currentPos);
@@ -223,4 +151,4 @@ int Robot::getY()
 char Robot::getType()
 {
     return this->type;
-}
+}*/
