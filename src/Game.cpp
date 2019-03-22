@@ -9,16 +9,9 @@ Game::Game(string file)
    
 }
 
-void Game::startGame(int HumanOrBot,int level, int algorithm){
-     if(HumanOrBot == 0)
-        
-    
-    else if (HumanOrBot == 1)
-       
-}
-
 void Game::loop()
 {
+    cin.ignore(256,'\n');
     while(this->player->makeMove())
     {
         if(this->player->checkEndGame())
@@ -44,7 +37,6 @@ void Game::menu()
     cout << "1 - Bots" << endl;
 
     cin >> playerChoice;
-    //this->playerChoice = playerCoice;
 
     cout << "Choose the level (int):";
 

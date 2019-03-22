@@ -15,7 +15,7 @@ private:
     
 public:
     Game(std::string file);
-
+    void menu();
     void loop();
 };
 

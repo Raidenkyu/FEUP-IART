@@ -2,45 +2,33 @@
 
 using namespace std;
 
-AI::AI(int level, Map *map, int algorithm) : Player(level, map) {
-    this->algorithm = algorithm;
+AI::AI(int level, Map *map, int algorithm) : Player(level, map),
+                                             algorithm(algorithm)
+{
+
+    if(this->computeSolution()){
+        this->alg_calculated = true;
+    }
 }
 
 bool AI::makeMove()
 {
-   
+
     this->map->printMap(this->level, this->robot_positions);
     cout << "Press ENTER to get next step" << endl;
+    
     cin.get();
-    if (!this->alg_calculated)
-    {
-        if(this->algorithm == DFS){
-        if (this->dfs())
-        {
-            this->alg_calculated = true;
-            this->index_sol = 0;
-        }
-        else
-        {
-            cout << "Solution not found " << endl;
-            return false;
-        }
-        }
-        else{
-            cout << "Unexpected algorithm" << endl;
-            return false
-        }
-    }
+
     if (this->alg_calculated)
     {
         if (this->index_sol >= this->best_move.size())
         {
             this->map->printMap(this->level, this->robot_positions);
-            this->alg_calculated=false;
+            this->alg_calculated = false;
             return false;
         }
-        u_int robot_number=this->best_move[this->index_sol].first;
-        char direction =this->best_move[this->index_sol].second;
+        u_int robot_number = this->best_move[this->index_sol].first;
+        char direction = this->best_move[this->index_sol].second;
         switch (direction)
         {
         case 't':
@@ -69,11 +57,36 @@ bool AI::makeMove()
         if (this->index_sol >= this->best_move.size())
         {
             this->map->printMap(this->level, this->robot_positions);
-            this->alg_calculated=false;
+            this->alg_calculated = false;
             return false;
         }
     }
     return true;
+}
+
+bool AI::computeSolution()
+{
+    bool solutionFound = false;
+    this->map->printMap(this->level, this->robot_positions);
+    cout << "Computing a Solution. Wait a few minutes" << endl;
+    switch (this->algorithm)
+    {
+    case DFS:
+         solutionFound = this->dfs();
+         break;
+    case BFS:
+         solutionFound = this->dfs();
+         break;
+    case ASTAR:
+         solutionFound = this->dfs();
+         break;
+    default:
+        cout << "Invalid Algorithm" << endl;
+        exit(0);
+    }
+
+    cout << "Solution computed" << endl;
+    return solutionFound;
 }
 
 bool AI::alreadyBeenOn(std::vector<std::pair<u_int, u_int>> visited, std::pair<u_int, u_int> position)
@@ -104,8 +117,8 @@ bool AI::dfs()
 
 bool AI::dfs(int custo, vector<vector<char>> map_char, vector<pair<u_int, u_int>> robot_positions, vector<vector<pair<u_int, u_int>>> visited, vector<pair<u_int, char>> moves)
 {
-    if(custo > (this->level+1)*15)
-    return false;
+    if (custo > (this->level + 1) * 15)
+        return false;
 
     bool houve_sol = false;
     if (custo >= this->best_custo)

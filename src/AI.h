@@ -23,6 +23,9 @@ private:
     //algoritmo a usar
     int algorithm;
 
+    //Chooses one of the existing algorithms and computes a solution
+    bool computeSolution();
+
     //Saber se o algoritmo já foi calculado
     bool alg_calculated;
     u_int index_sol;

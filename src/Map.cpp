@@ -57,7 +57,7 @@ Map::Map(string file)
 }
 
 void Map::printMap(int level, vector<pair<u_int, u_int>> robot_positions)
-{
+{   clearScreen();
     vector<vector<char>> matrix = this->map[level];
     char letra_grande = 'A';
     char letra_pequena = 'a';
@@ -90,6 +90,7 @@ void Map::printMap(int level, vector<pair<u_int, u_int>> robot_positions)
 
 void Map::printMap(int level)
 {
+    clearScreen();
     vector<vector<char>> matrix = this->map[level];
     char letra_grande = 'A';
     char letra_pequena = 'a';
