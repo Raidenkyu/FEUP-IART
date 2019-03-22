@@ -61,6 +61,12 @@ void Map::printMap(int level, vector<pair<u_int, u_int>> robot_positions)
     vector<vector<char>> matrix = this->map[level];
     char letra_grande = 'A';
     char letra_pequena = 'a';
+    for (u_int i = 0; i <this->robot_targets[level].size(); i++)
+    {
+        u_int posX = this->robot_targets[level][i].first, posY = this->robot_targets[level][i].second;
+        matrix[posY][posX] = letra_pequena;
+        letra_pequena += 1;
+    }
     for (u_int i = 0; i < robot_positions.size(); i++)
     {
         u_int posX = robot_positions[i].first, posY = robot_positions[i].second;
@@ -68,12 +74,6 @@ void Map::printMap(int level, vector<pair<u_int, u_int>> robot_positions)
         letra_grande += 1;
     }
 
-    for (u_int i = 0; i <this->robot_targets[level].size(); i++)
-    {
-        u_int posX = this->robot_targets[level][i].first, posY = this->robot_targets[level][i].second;
-        matrix[posY][posX] = letra_pequena;
-        letra_pequena += 1;
-    }
     for (u_int i = 0; i < matrix.size(); i++)
     {
         for (u_int j = 0; j < matrix[i].size(); j++)
@@ -85,6 +85,7 @@ void Map::printMap(int level, vector<pair<u_int, u_int>> robot_positions)
         }
         cout << endl;
     }
+    cout << endl;
 }
 
 void Map::printMap(int level)

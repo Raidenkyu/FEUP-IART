@@ -17,7 +17,7 @@ public:
     Human(){}
     Human(int level,Map *map);
 
-    bool makeMove(char robot,char direction);
+    bool makeMove();
 
 };
 

@@ -94,6 +94,86 @@ pair<u_int, u_int> Player::MoveRight(int robot_number)
     return make_pair(currentX, currentY);
 }
 
+
+pair<u_int, u_int> Player::MoveTop(vector<vector<char>> map_char,int robot_number,vector<pair<u_int,u_int>> robot_positions)
+{
+    u_int currentX = robot_positions[robot_number].first;
+    u_int currentY = robot_positions[robot_number].second - 1;
+    vector<vector<char>> map = map_char;
+    u_int size1 = map[0].size(), size2 = map.size();
+    while (currentX >= 0 && currentX < size1 && currentY >= 0 && currentY < size2)
+    {
+        if (map[currentY][currentX] == '.' || (map[currentY][currentX] >= 97 && map[currentY][currentX] <= 122))
+        {
+            currentY--;
+        }
+        else
+        {
+            return make_pair(currentX, currentY + 1);
+        }
+    }
+    return make_pair(currentX, currentY);
+}
+
+pair<u_int, u_int> Player::MoveBottom(vector<vector<char>> map_char,int robot_number,vector<pair<u_int,u_int>> robot_positions)
+{
+    u_int currentX = robot_positions[robot_number].first;
+    u_int currentY = robot_positions[robot_number].second + 1;
+    vector<vector<char>> map =map_char;
+    u_int size1 = map[0].size(), size2 = map.size();
+    while (currentX >= 0 && currentX < size1 && currentY >= 0 && currentY < size2)
+    {
+        if (map[currentY][currentX] == '.' || (map[currentY][currentX] >= 97 && map[currentY][currentX] <= 122))
+        {
+            currentY++;
+        }
+        else
+        {
+            return make_pair(currentX, currentY - 1);
+        }
+    }
+    return make_pair(currentX, currentY);
+}
+
+pair<u_int, u_int> Player::MoveLeft(vector<vector<char>> map_char,int robot_number,vector<pair<u_int,u_int>> robot_positions)
+{
+    u_int currentX = robot_positions[robot_number].first - 1;
+    u_int currentY = robot_positions[robot_number].second;
+    vector<vector<char>> map = map_char;
+    u_int size1 = map[0].size(), size2 = map.size();
+    while (currentX >= 0 && currentX < size1 && currentY >= 0 && currentY < size2)
+    {
+        if (map[currentY][currentX] == '.' || (map[currentY][currentX] >= 97 && map[currentY][currentX] <= 122))
+        {
+            currentX--;
+        }
+        else
+        {
+            return make_pair(currentX + 1, currentY);
+        }
+    }
+    return make_pair(currentX, currentY);
+}
+pair<u_int, u_int> Player::MoveRight(vector<vector<char>> map_char,int robot_number,vector<pair<u_int,u_int>> robot_positions)
+{
+    u_int currentX = robot_positions[robot_number].first + 1;
+    u_int currentY = robot_positions[robot_number].second;
+    vector<vector<char>> map = map_char;
+    u_int size1 = map[0].size(), size2 = map.size();
+    while (currentX >= 0 && currentX < size1 && currentY >= 0 && currentY < size2)
+    {
+        if (map[currentY][currentX] == '.' || (map[currentY][currentX] >= 97 && map[currentY][currentX] <= 122))
+        {
+            currentX++;
+        }
+        else
+        {
+            return make_pair(currentX - 1, currentY);
+        }
+    }
+    return make_pair(currentX, currentY);
+}
+
 bool Player::PlayTop(int robot_number)
 {
     u_int currentX = this->robot_positions[robot_number].first;
@@ -177,16 +257,6 @@ bool Player::PlayRight(int robot_number)
     return false;
 }
 
-bool Player::makePlay()
-{
-    this->map->printMap(this->level, this->robot_positions);
-    char robot, direction;
-    cin >> robot;
-    if (robot == '0' || robot == 'q')
-        return false;
-    cin >> direction;
-    return this->makeMove(robot, direction);
-}
 
 int Player::transformCharToNumber(char ch)
 {
@@ -207,12 +277,32 @@ void Player::replacePosition(int robot_number,std::pair<u_int,u_int> current,std
     this->robot_positions[robot_number] = make_pair(toX, toY);
 }
 
+void Player::replacePosition(int robot_number,pair<u_int,u_int> current,pair<u_int,u_int> to,vector<pair<u_int,u_int>> &robot_positions,vector<vector<char>> &map_char)
+{
+    u_int currentX=current.first,currentY=current.second;
+    u_int toX=to.first,toY=to.second;
+    char char_robot=this->transformNumberToChar(robot_number);
+    map_char[currentY][currentX]='.';
+    map_char[toY][toX]=char_robot;
+    robot_positions[robot_number] = make_pair(toX, toY);
+}
+
 bool Player::checkEndGame()
 {
     vector<pair<u_int,u_int>> targets=this->map->getRobotTargets(this->level);
     for(u_int i=0;i<targets.size();i++)
     {
         if(!(targets[i].first==this->robot_positions[i].first && targets[i].second == this->robot_positions[i].second))
+            return false;
+    }
+    return true;
+}
+bool Player::checkEndGame(std::vector<std::pair<u_int,u_int>> robot_positions)
+{
+    vector<pair<u_int,u_int>> targets=this->map->getRobotTargets(this->level);
+    for(u_int i=0;i<targets.size();i++)
+    {
+        if(!(targets[i].first==robot_positions[i].first && targets[i].second == robot_positions[i].second))
             return false;
     }
     return true;

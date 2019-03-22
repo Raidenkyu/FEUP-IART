@@ -15,7 +15,7 @@ Game::Game(int HumanOrBot,int level,string file)
 
 void Game::loop()
 {
-    while(this->player->makePlay())
+    while(this->player->makeMove())
     {
         if(this->player->checkEndGame())
             return ;

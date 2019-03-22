@@ -5,7 +5,6 @@
 #include "AI.h"
 #include "Human.h"
 #include "Map.h"
-#include "Robot.h"
 #include "macros.h"
 
 class Game {
