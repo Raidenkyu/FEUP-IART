@@ -1,105 +1,68 @@
 #include "Game.h"
-#include <fstream>
-#include <iostream>
-#include <climits>
 
 using namespace std;
 
-Game::Game(int HumanOrBot) : level(0), Andy('A'), Lisa('L')
+Game::Game(string file)
 {
-    if(HumanOrBot == 0)
-     player = new Player();
+    this->map=new Map(file);
+    this->menu();
+   
+}
+
+void Game::startGame(int HumanOrBot,int level, int algorithm){
+     if(HumanOrBot == 0)
+        
     
     else if (HumanOrBot == 1)
-     player = new BotPlayer();
-    this->loadMaps();
-}
-
-void Game::loadMaps()
-{
-    ifstream maps_file("res/maps.txt");
-    string line;
-    vector<vector<char>> matrix;
-    if (maps_file.is_open())
-    {
-        int sizeX,sizeY;
-        maps_file >> sizeX >> sizeY;
-        getline(maps_file, line);
-        for(int i=0;i<sizeX;i++)
-        {
-            vector<char> temp;
-            matrix.push_back(temp);
-        }     
-        for(int i=0;i<sizeY;i++)
-        {
-            getline(maps_file, line);
-            for(int j=0;j<sizeX;j++)
-            {
-                matrix[j].push_back(line[j]);
-            }
-        }
-        Map map(0,matrix);
-        this->maps.push_back(map);
-    }
-    else
-    {
-        cout << "Unable to locate maps file" << endl;
-        exit(1);
-    }
-}
-
-void Game::run()
-{
-    this->maps[this->level].setRobots(this->Andy, this->Lisa);
-    this->printGame();
-    this->loop();
+       
 }
 
 void Game::loop()
 {
-    string play;
-    bool checkTarget = true;
-    do
+    while(this->player->makeMove())
     {
-        play = this->player->play();
-        this->moveRobots(play);
-        this->printGame();
-        checkTarget = !(this->maps[this->level].checkTarget(this->Andy, this->Lisa));
-    } while (play != "q" && checkTarget);
-}
-
-void Game::printGame()
-{
-    vector<vector<char>> map = this->maps[this->level].getMap();
-    map[this->Andy.getX()][this->Andy.getY()] = 'A';
-    if (this->Lisa.getX() != -1)
-    {
-        map[this->Lisa.getY()][this->Lisa.getX()] = 'L';
-    }
-    for (unsigned int i = 0; i < map[0].size(); i++)
-    {
-        for (unsigned int j = 0; j < map.size(); j++)
-        {
-            cout << map[j][i];
-        }
-        cout << endl;
+        if(this->player->checkEndGame())
+            return ;
     }
 }
 
-bool Game::moveRobots(string play)
+void Game::menu()
 {
-    char robot = toupper(play[0]);
-    char direction = toupper(play[1]);
+
+    int playerChoice, levelChoice, algorithmChoice;
+
+    cout << "  _____       _           _     _           _                _       _   _     " << endl;
+    cout << " |  __ \\     | |         | |   | |         | |              (_)     | | | |    " << endl;
+    cout << " | |__) |___ | |__   ___ | |_  | |     __ _| |__  _   _ _ __ _ _ __ | |_| |__  " << endl;
+    cout << " |  _  // _ \\| '_ \\ / _ \\| __| | |    / _` | '_ \\| | | | '__| | '_ \\| __| '_ \\ " << endl;
+    cout << " | | \\ \\ (_) | |_) | (_) | |_  | |___| (_| | |_) | |_| | |  | | | | | |_| | | |" << endl;
+    cout << " |_|  \\_\\___/|_.__/ \\___/ \\__| |______\\__,_|_.__/ \\__, |_|  |_|_| |_|\\__|_| |_|" << endl;
+    cout << "                                                   __/ |                       " << endl;
+    cout << "                                                  |___/                       " << endl;
+    cout << "Choose the game mode:" << endl;
+    cout << "0 - Humans" << endl;
+    cout << "1 - Bots" << endl;
+
+    cin >> playerChoice;
+    //this->playerChoice = playerCoice;
+
+    cout << "Choose the level (int):";
+
+while(!(levelChoice==0||levelChoice ==1)){
+    cin >> levelChoice;
+}
+    if(playerChoice == 0){
+        player = new Human(level,this->map);
+        return;
+    }
+    else if(playerChoice == 1){
+    cout << "Choose the algorithm:" << endl;
+    cout << "0 - Depth-First Search" << endl;
+    cout << "1 - Breadth-First Search" << endl;
+    cout << "2 - A-Star *****" << endl;
+    cin >> algorithmChoice;
     
-    switch (robot)
-    {
-    case 'A':
-        return this->Andy.moveDFS(this->maps[this->level].getMap());
-        break;
-    case 'L':
-        return this->Lisa.moveDFS(this->maps[this->level].getMap());
-        break;
-    default:
-        return false;
-    };
+     player = new AI(level,this->map, algorithmChoice);
+    }
+
 }

@@ -1,22 +1,32 @@
 #ifndef MAP_H_
 #define MAP_H_
 
-#include <vector>
-#include "Robot.h"
+#include "macros.h"
 
+
+// Class que guarda todos os mapas. Serve para guardar informação apenas ou imprimir mapas
 class Map {
 private:
-    int num;
-    std::vector<std::vector<char>> charMap;
-    int AndyX,AndyY;
-    int LisaX,LisaY;
-    int targetAX,targetAY;
-    int targetLX,targetLY;
+    std::vector<std::pair<u_int,u_int>> sizes;
+    std::vector<std::vector<std::vector<char>>> map;
+    std::vector<u_int> number_of_robots;
+    std::vector<std::vector<std::pair<u_int,u_int>>> robot_positions;
+    std::vector<std::vector<std::pair<u_int,u_int>>> robot_targets;
 public:
-    Map(int level, std::vector<std::vector<char>> & charMap);
-    std::vector<std::vector<char>> getMap();
-    void setRobots(Robot & Andy, Robot & Lisa);
-    bool checkTarget(Robot & Andy, Robot & Lisa);
+    //Load all the map in a given file
+    Map(std::string file);
+
+    //Imprime o mapa com as posições dos robots que eu pretendo
+    void printMap(int level,std::vector<std::pair<u_int,u_int>> robot_positions);
+    //Imprime o mapa com as posições originais
+    void printMap(int level);
+
+    //Devolve os valores originais
+    std::vector<std::pair<u_int,u_int>> getRobotPosition(int level);
+    std::vector<std::pair<u_int,u_int>> getRobotTargets(int level);
+    std::vector<std::vector<char>> getMap(int level);
+    u_int getNumberOfRobots(int level);
+
 };
 
 #endif

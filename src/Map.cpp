@@ -2,57 +2,139 @@
 
 using namespace std;
 
-Map::Map(int num, vector<vector<char>> & charMap): 
-    num(num),
-    charMap(charMap),
-    AndyX(8),
-    AndyY(1),
-    LisaX(13),
-    LisaY(1),
-    targetAX(-1),
-    targetAY(-1),
-    targetLX(-1),
-    targetLY(-1) {
-        
-    for(unsigned int i = 0; i< this->charMap.size();i++){
-        for(unsigned int j = 0; j < this->charMap[i].size();j++){
-            /*
-            if(this->charMap[i][j] == 'A'){
-                this->AndyY = i;
-                this->AndyX = j;
+Map::Map(string file)
+{
+    ifstream maps_file("res/maps.txt");
+    string line;
+    vector<vector<char>> matrix;
+    if (maps_file.is_open())
+    {
+        int map_quantity;
+        maps_file >> map_quantity;
+        while (map_quantity--)
+        {
+            u_int sizeX, sizeY;
+            maps_file >> sizeX >> sizeY;
+            //Guardar size X e Y no array de tamanhos
+            this->sizes.push_back(make_pair(sizeX, sizeY));
+
+            u_int n_robots;
+            maps_file >> n_robots;
+            this->number_of_robots.push_back(n_robots);
+            vector<pair<u_int, u_int>> robot_positions, robot_targets;
+            for (u_int i = 0; i < n_robots; i++)
+            {
+                u_int positionX, positionY, targetX, targetY;
+                maps_file >> positionX >> positionY >> targetX >> targetY;
+                robot_positions.push_back(make_pair(positionX, positionY));
+                robot_targets.push_back(make_pair(targetX, targetY));
             }
-            else if(this->charMap[i][j] == 'L'){
-                this->LisaY = i;
-                this->LisaX = j;
-            } */
-            if(this->charMap[i][j] == 'a'){
-                this->targetAX = i;
-                this->targetAY = j;
+            this->robot_positions.push_back(robot_positions);
+            this->robot_targets.push_back(robot_targets);
+
+            for (u_int i = 0; i < sizeY; i++)
+            {
+                vector<char> temp;
+                matrix.push_back(temp);
             }
-            else if(this->charMap[i][j] == 'l'){
-                this->targetLX = i;
-                this->targetLY = j;
+            char ler;
+            for (u_int i = 0; i < sizeY; i++)
+            {
+                for (u_int j = 0; j < sizeX; j++)
+                {
+                    maps_file >> ler;
+                    matrix[i].push_back(ler);
+                }
             }
+            this->map.push_back(matrix);
         }
     }
-}
-
-vector<vector<char>> Map::getMap(){
-    return this->charMap;
-}
-
-void Map::setRobots(Robot & Andy, Robot & Lisa){
-    Andy.setPosition(this->AndyX,this->AndyY);
-    Lisa.setPosition(this->LisaX,this->LisaY);
-}
-
-bool Map::checkTarget(Robot & Andy, Robot & Lisa){
-    if(this->targetLX == -1){
-        return ((Andy.getX() == this->targetAX)  &&(Andy.getY() == this->targetAY));
+    else
+    {
+        cout << "Unable to locate maps file" << endl;
+        exit(1);
     }
-    else{
-        bool checkAndy = (Andy.getX() == this->targetAX)  && (Andy.getY() == this->targetAY);
-        bool checkLisa = (Lisa.getX() == this->targetLX)  && (Lisa.getY() == this->targetLY);
-        return (checkAndy && checkLisa);
+}
+
+void Map::printMap(int level, vector<pair<u_int, u_int>> robot_positions)
+{
+    vector<vector<char>> matrix = this->map[level];
+    char letra_grande = 'A';
+    char letra_pequena = 'a';
+    for (u_int i = 0; i <this->robot_targets[level].size(); i++)
+    {
+        u_int posX = this->robot_targets[level][i].first, posY = this->robot_targets[level][i].second;
+        matrix[posY][posX] = letra_pequena;
+        letra_pequena += 1;
     }
+    for (u_int i = 0; i < robot_positions.size(); i++)
+    {
+        u_int posX = robot_positions[i].first, posY = robot_positions[i].second;
+        matrix[posY][posX] = letra_grande;
+        letra_grande += 1;
+    }
+
+    for (u_int i = 0; i < matrix.size(); i++)
+    {
+        for (u_int j = 0; j < matrix[i].size(); j++)
+        {
+            if(matrix[i][j]=='.')
+                cout << ' ';
+            else
+                cout << matrix[i][j];
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
+
+void Map::printMap(int level)
+{
+    vector<vector<char>> matrix = this->map[level];
+    char letra_grande = 'A';
+    char letra_pequena = 'a';
+    for (u_int i = 0; i < this->robot_positions[level].size(); i++)
+    {
+        u_int posX = this->robot_positions[level][i].first, posY = this->robot_positions[level][i].second;
+        matrix[posY][posX] = letra_grande;
+        letra_grande += 1;
+    }
+
+    for (u_int i = 0; i <this->robot_targets[level].size(); i++)
+    {
+        u_int posX = this->robot_targets[level][i].first, posY = this->robot_targets[level][i].second;
+        matrix[posY][posX] = letra_pequena;
+        letra_pequena += 1;
+    }
+    for (u_int i = 0; i < matrix.size(); i++)
+    {
+        for (u_int j = 0; j < matrix[i].size(); j++)
+        {
+            if(matrix[i][j]=='.')
+                cout << ' ';
+            else
+                cout << matrix[i][j];
+        }
+        cout << endl;
+    }
+}
+
+std::vector<std::pair<u_int,u_int>> Map::getRobotPosition(int level)
+{
+    return this->robot_positions[level];
+}
+
+std::vector<std::pair<u_int,u_int>> Map::getRobotTargets(int level)
+{
+    return this->robot_targets[level];
+}
+
+u_int Map::getNumberOfRobots(int level)
+{
+    return this->number_of_robots[level];
+}
+
+vector<vector<char>> Map::getMap(int level)
+{
+    return this->map[level];
 }
