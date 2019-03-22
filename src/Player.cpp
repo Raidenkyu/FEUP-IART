@@ -204,7 +204,7 @@ void Player::replacePosition(int robot_number,std::pair<u_int,u_int> current,std
     char char_robot=this->transformNumberToChar(robot_number);
     this->map_char[currentY][currentX]='.';
     this->map_char[toY][toX]=char_robot;
-    this->robot_positions[robot_number] = make_pair(currentX, currentY);
+    this->robot_positions[robot_number] = make_pair(toX, toY);
 }
 
 /*
