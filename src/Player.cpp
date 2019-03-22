@@ -182,7 +182,7 @@ bool Player::makePlay()
     this->map->printMap(this->level, this->robot_positions);
     char robot, direction;
     cin >> robot;
-    if (robot == '0')
+    if (robot == '0' || robot == 'q')
         return false;
     cin >> direction;
     return this->makeMove(robot, direction);
@@ -207,11 +207,13 @@ void Player::replacePosition(int robot_number,std::pair<u_int,u_int> current,std
     this->robot_positions[robot_number] = make_pair(toX, toY);
 }
 
-/*
-string Player::play(){
-    cout << "Play: ";
-    string line;
-    cin.ignore();
-    getline(cin,line);
-    return line;
-}*/
+bool Player::checkEndGame()
+{
+    vector<pair<u_int,u_int>> targets=this->map->getRobotTargets(this->level);
+    for(u_int i=0;i<targets.size();i++)
+    {
+        if(!(targets[i].first==this->robot_positions[i].first && targets[i].second == this->robot_positions[i].second))
+            return false;
+    }
+    return true;
+}

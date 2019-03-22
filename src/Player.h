@@ -45,6 +45,9 @@ public:
 
     //Substitui a posição no map_char do robot. Substitui a posição no vector de posições do robot
     void replacePosition(int robot_number,std::pair<u_int,u_int> current,std::pair<u_int,u_int> to);
+
+    //Verifica se o jogo acabou, true se acabou ou false caso contrario
+    bool checkEndGame();
 };
 
 #endif
