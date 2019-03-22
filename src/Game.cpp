@@ -2,16 +2,20 @@
 
 using namespace std;
 
-Game::Game(int HumanOrBot,int level,string file)
+Game::Game(string file)
 {
     this->map=new Map(file);
-    if(HumanOrBot == 0)
-        player = new Human(level,this->map);
-    
-    else if (HumanOrBot == 1)
-        player = new AI(level,this->map);
+    this->menu();
+   
 }
 
+void Game::startGame(int HumanOrBot,int level, int algorithm){
+     if(HumanOrBot == 0)
+        
+    
+    else if (HumanOrBot == 1)
+       
+}
 
 void Game::loop()
 {
@@ -20,4 +24,45 @@ void Game::loop()
         if(this->player->checkEndGame())
             return ;
     }
+}
+
+void Game::menu()
+{
+
+    int playerChoice, levelChoice, algorithmChoice;
+
+    cout << "  _____       _           _     _           _                _       _   _     " << endl;
+    cout << " |  __ \\     | |         | |   | |         | |              (_)     | | | |    " << endl;
+    cout << " | |__) |___ | |__   ___ | |_  | |     __ _| |__  _   _ _ __ _ _ __ | |_| |__  " << endl;
+    cout << " |  _  // _ \\| '_ \\ / _ \\| __| | |    / _` | '_ \\| | | | '__| | '_ \\| __| '_ \\ " << endl;
+    cout << " | | \\ \\ (_) | |_) | (_) | |_  | |___| (_| | |_) | |_| | |  | | | | | |_| | | |" << endl;
+    cout << " |_|  \\_\\___/|_.__/ \\___/ \\__| |______\\__,_|_.__/ \\__, |_|  |_|_| |_|\\__|_| |_|" << endl;
+    cout << "                                                   __/ |                       " << endl;
+    cout << "                                                  |___/                       " << endl;
+    cout << "Choose the game mode:" << endl;
+    cout << "0 - Humans" << endl;
+    cout << "1 - Bots" << endl;
+
+    cin >> playerChoice;
+    //this->playerChoice = playerCoice;
+
+    cout << "Choose the level (int):";
+
+while(!(levelChoice==0||levelChoice ==1)){
+    cin >> levelChoice;
+}
+    if(playerChoice == 0){
+        player = new Human(level,this->map);
+        return;
+    }
+    else if(playerChoice == 1){
+    cout << "Choose the algorithm:" << endl;
+    cout << "0 - Depth-First Search" << endl;
+    cout << "1 - Breadth-First Search" << endl;
+    cout << "2 - A-Star *****" << endl;
+    cin >> algorithmChoice;
+    
+     player = new AI(level,this->map, algorithmChoice);
+    }
+
 }

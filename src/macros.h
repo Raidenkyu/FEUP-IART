@@ -11,4 +11,8 @@
 
 typedef unsigned int u_int;
 
+enum ALGORITHM{
+    DFS, BFS, ASTAR
+}
+
 #endif

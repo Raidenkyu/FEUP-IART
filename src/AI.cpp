@@ -2,13 +2,19 @@
 
 using namespace std;
 
-AI::AI(int level, Map *map) : Player(level, map) {}
+AI::AI(int level, Map *map, int algorithm) : Player(level, map) {
+    this->algorithm = algorithm;
+}
 
 bool AI::makeMove()
 {
+   
     this->map->printMap(this->level, this->robot_positions);
+    cout << "Press ENTER to get next step" << endl;
+    cin.get();
     if (!this->alg_calculated)
     {
+        if(this->algorithm == DFS){
         if (this->dfs())
         {
             this->alg_calculated = true;
@@ -16,8 +22,13 @@ bool AI::makeMove()
         }
         else
         {
-            cout << "Não foi possivel encontrar uma solução " << endl;
+            cout << "Solution not found " << endl;
             return false;
+        }
+        }
+        else{
+            cout << "Unexpected algorithm" << endl;
+            return false
         }
     }
     if (this->alg_calculated)
@@ -93,6 +104,9 @@ bool AI::dfs()
 
 bool AI::dfs(int custo, vector<vector<char>> map_char, vector<pair<u_int, u_int>> robot_positions, vector<vector<pair<u_int, u_int>>> visited, vector<pair<u_int, char>> moves)
 {
+    if(custo > (this->level+1)*15)
+    return false;
+
     bool houve_sol = false;
     if (custo >= this->best_custo)
         return false;

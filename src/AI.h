@@ -20,13 +20,16 @@ private:
     //melhor custo
     int best_custo;
 
+    //algoritmo a usar
+    int algorithm;
+
     //Saber se o algoritmo já foi calculado
     bool alg_calculated;
     u_int index_sol;
 
 public:
     AI(){}
-    AI(int level,Map * map);
+    AI(int level,Map * map, int algorithm);
 
     //faz movimento de AI
     bool makeMove();

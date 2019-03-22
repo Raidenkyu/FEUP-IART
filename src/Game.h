@@ -14,7 +14,7 @@ private:
     Map * map;
     
 public:
-    Game(int HumanOrBot,int level,std::string file);
+    Game(std::string file);
 
     void loop();
 };
