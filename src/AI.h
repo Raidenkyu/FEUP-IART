@@ -14,6 +14,11 @@ private:
     //função dfs recursiva
     bool dfs(int custo,std::vector<std::vector<char>> map_char,std::vector<std::pair<u_int,u_int>> robot_positions,std::vector<std::vector<std::pair<u_int,u_int>>> visited,std::vector<std::pair<u_int,char>> moves);
 
+    //funcao bfs
+    bool bfs();
+
+    //pega no node final e mete os paizinhos dele todos no best move (incluindo ele), em ordem inversa
+    void TranslateToBestMove(Node * node);
     //testa se um posição já foi passada
     bool alreadyBeenOn(std::vector<std::pair<u_int,u_int>> visited,std::pair<u_int,u_int> position);
 
@@ -38,6 +43,7 @@ public:
 
     //faz movimento de AI
     bool makeMove();
+
 
     //faz a procura em profundidade
     bool dfs();

@@ -1,5 +1,6 @@
 #include "AI.h"
 #include <algorithm>
+#include <queue>
 
 using namespace std;
 
@@ -70,14 +71,14 @@ bool AI::computeSolution()
 {
     bool solutionFound = false;
     this->map->printMap(this->level, this->robot_positions);
-    cout << "Computing a Solution. Wait a few minutes" << endl;
+    cout << "Computing a Solution. Wait a few seconds" << endl;
     switch (this->algorithm)
     {
     case DFS:
         solutionFound = this->dfs();
         break;
     case BFS:
-        solutionFound = this->dfs();
+        solutionFound = this->bfs();
         break;
     case ASTAR:
         solutionFound = this->astar();
@@ -356,4 +357,74 @@ char AI::numToPlay(int num)
         break;
     }
     return play;
+}
+
+
+bool AI::bfs()
+{
+
+
+     
+    bool found = false;
+
+    queue<Node*> myqueue;
+    myqueue.push(new Node(this->robot_positions));
+
+    while(!found && !myqueue.empty()){
+
+    if(this->checkEndGame(myqueue.front()->robotsCoords)){
+        TranslateToBestMove(myqueue.front());
+        found = true;
+    }
+    
+    for (u_int i = 0; i < robot_positions.size(); i++)
+    {
+
+        pair<u_int, u_int> current_position = myqueue.front()->robotsCoords[i];
+
+        pair<u_int, u_int> top_move = this->MoveTop(this->map_char, i, myqueue.front()->robotsCoords);
+        pair<u_int, u_int> bottom_move = this->MoveBottom(this->map_char, i, myqueue.front()->robotsCoords);
+        pair<u_int, u_int> left_move = this->MoveLeft(this->map_char, i, myqueue.front()->robotsCoords);
+        pair<u_int, u_int> right_move = this->MoveRight(this->map_char, i, myqueue.front()->robotsCoords);
+
+        if (top_move != current_position)
+        {
+            std::vector<std::pair<u_int,u_int>> robotsCoordsAux = myqueue.front()->robotsCoords;
+            robotsCoordsAux[i] = top_move;
+            myqueue.push(new Node(robotsCoordsAux, myqueue.front()));
+        }
+        if (bottom_move != current_position)
+        {
+            std::vector<std::pair<u_int,u_int>> robotsCoordsAux = myqueue.front()->robotsCoords;
+            robotsCoordsAux[i] = bottom_move;
+            myqueue.push(new Node(robotsCoordsAux, myqueue.front()));
+            
+        }
+        if (left_move != current_position)
+        {
+           std::vector<std::pair<u_int,u_int>> robotsCoordsAux = myqueue.front()->robotsCoords;
+            robotsCoordsAux[i] = left_move;
+            myqueue.push(new Node(robotsCoordsAux, myqueue.front()));
+        }
+        if (right_move != current_position)
+        {
+            std::vector<std::pair<u_int,u_int>> robotsCoordsAux = myqueue.front()->robotsCoords;
+            robotsCoordsAux[i] = right_move;
+            myqueue.push(new Node(robotsCoordsAux, myqueue.front()));
+        }
+    }
+    myqueue.pop();
+}
+
+return found;
+}
+
+void AI::TranslateToBestMove(Node * node){
+
+this->best_move.clear();
+
+    while(node->parent != nullptr){
+    this->best_move.push_back(node->move);
+    node = node->parent;
+    }
 }
