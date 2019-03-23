@@ -5,8 +5,9 @@ using namespace std;
 Node::Node(vector<pair<u_int,u_int>> robotsCoords,Node * parent):
     G(0),
     H(0),
+    robotsCoords(robotsCoords),
     parent(parent),
-    move(pair<u_int,char>('f',0))
+    move(pair<u_int,char>(0,'f'))
     {
 
     }
@@ -18,10 +19,12 @@ u_int Node::getScore(){
 
 u_int Node::computeHeuristic(vector<pair<u_int,u_int>> targets){
     u_int h = 0;
+    int deltaX, deltaY;
     for(unsigned int i = 0; i < targets.size(); i++){
-        h+= abs(((int)robotsCoords[i].first) - ((int)targets[i].first));
-        h+= abs(((int)robotsCoords[i].second) - ((int)targets[i].second));
+        deltaX= abs(((int)(robotsCoords[i].first)) - ((int)(targets[i].first)));
+        deltaY= abs(((int)(robotsCoords[i].second)) - ((int)(targets[i].second)));
+        h+= deltaX + deltaY;
     }
-    this->H = 0;
+    this->H = h;
     return h;
 }
