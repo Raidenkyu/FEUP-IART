@@ -5,6 +5,8 @@
 #include "Player.h"
 #include "Map.h"
 #include "macros.h"
+#include "Node.h"
+#include <set>
 
 class AI: public Player {
 private:
@@ -39,6 +41,16 @@ public:
 
     //faz a procura em profundidade
     bool dfs();
+
+
+    //A-star Search
+    bool astar();
+
+    std::pair<u_int, u_int> getNewCoords(int robotIndex, int direction, std::vector<std::pair<u_int, u_int>> robotsCoords);
+    Node * findNodeOnList(std::set<Node*> & nodes, std::pair<u_int,u_int> robotCoords, int robotIndex);
+    void releaseNodes(std::set<Node*> & nodes);
+    bool detectCollision(std::pair<u_int,u_int> oldCoords, std::pair<u_int,u_int> newCoords);
+    char numToPlay(int num);
 };
 
 #endif

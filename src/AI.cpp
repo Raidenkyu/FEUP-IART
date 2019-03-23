@@ -1,4 +1,5 @@
 #include "AI.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -6,7 +7,8 @@ AI::AI(int level, Map *map, int algorithm) : Player(level, map),
                                              algorithm(algorithm)
 {
 
-    if(this->computeSolution()){
+    if (this->computeSolution())
+    {
         this->alg_calculated = true;
     }
 }
@@ -16,7 +18,7 @@ bool AI::makeMove()
 
     this->map->printMap(this->level, this->robot_positions);
     cout << "Press ENTER to get next step" << endl;
-    
+
     cin.get();
 
     if (this->alg_calculated)
@@ -72,14 +74,14 @@ bool AI::computeSolution()
     switch (this->algorithm)
     {
     case DFS:
-         solutionFound = this->dfs();
-         break;
+        solutionFound = this->dfs();
+        break;
     case BFS:
-         solutionFound = this->dfs();
-         break;
+        solutionFound = this->dfs();
+        break;
     case ASTAR:
-         solutionFound = this->dfs();
-         break;
+        solutionFound = this->dfs();
+        break;
     default:
         cout << "Invalid Algorithm" << endl;
         exit(0);
@@ -206,4 +208,147 @@ bool AI::dfs(int custo, vector<vector<char>> map_char, vector<pair<u_int, u_int>
         }
     }
     return houve_sol;
+}
+
+bool AI::astar()
+{
+    Node *current = nullptr;
+    set<Node*> openSet, closedSet;
+    openSet.insert(new Node(this->robot_positions));
+
+    while (!openSet.empty())
+    {
+        current = *openSet.begin();
+        for (auto node : openSet)
+        {
+            if (node->getScore() <= current->getScore())
+            {
+                current = node;
+            }
+        }
+
+        if (this->checkEndGame(current->robotsCoords))
+        {
+            break;
+        }
+
+        closedSet.insert(current);
+        openSet.erase(std::find(openSet.begin(), openSet.end(), current));
+
+        for (u_int i = 0; i < this->robot_positions.size(); ++i)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                pair<u_int, u_int> newCoordinates = getNewCoords(i, j, current->robotsCoords);
+                vector<pair<u_int, u_int>> newRobotCoords = current->robotsCoords;
+                newRobotCoords[i] = newCoordinates;
+                if (detectCollision(current->robotsCoords[i], newCoordinates) ||
+                    findNodeOnList(closedSet, newCoordinates,i))
+                {
+                    continue;
+                }
+
+                uint totalCost = current->G + 1;
+
+                Node *successor = findNodeOnList(openSet, newCoordinates,i);
+                if (successor == nullptr)
+                {
+                    successor = new Node(newRobotCoords, current);
+                    successor->G = totalCost;
+                    successor->computeHeuristic(this->map->getRobotTargets(this->level));
+                    openSet.insert(successor);
+                }
+                else if (totalCost < successor->G)
+                {
+                    successor->parent = current;
+                    successor->G = totalCost;
+                }
+            }
+        }
+    }
+
+    while (current != nullptr)
+    {
+        if(current->move.first != 'f'){
+        this->best_move.insert(this->best_move.begin(),current->move);
+        current = current->parent;
+        }
+    }
+
+    releaseNodes(openSet);
+    releaseNodes(closedSet);
+
+    return (this->best_move.size() > 0? true:false);
+}
+
+pair<u_int, u_int> AI::getNewCoords(int robotIndex, int direction, vector<pair<u_int, u_int>> robotsCoords)
+{
+    pair<u_int, u_int> *newCoords = NULL;
+    switch (direction)
+    {
+    case 0:
+        *newCoords = this->MoveTop(map_char, direction, robotsCoords);
+        break;
+    case 1:
+        *newCoords = this->MoveLeft(map_char, direction, robotsCoords);
+        break;
+    case 2:
+        *newCoords = this->MoveBottom(map_char, direction, robotsCoords);
+        break;
+    case 3:
+        *newCoords = this->MoveRight(map_char, direction, robotsCoords);
+        break;
+    }
+    return *newCoords;
+}
+
+Node *AI::findNodeOnList(set<Node *> &nodes, pair<u_int, u_int> robotCoords, int robotIndex)
+{
+    for (auto node : nodes)
+    {
+        if (node->robotsCoords[robotIndex] == robotCoords)
+        {
+            return node;
+        }
+    }
+    return nullptr;
+}
+
+void AI::releaseNodes(set<Node *> &nodes)
+{
+    for (auto it = nodes.begin(); it != nodes.end();)
+    {
+        delete *it;
+        it = nodes.erase(it);
+    }
+}
+
+bool AI::detectCollision(pair<u_int, u_int> oldCoords, pair<u_int, u_int> newCoords)
+{
+    if ((oldCoords.first == newCoords.first) && (oldCoords.second == newCoords.second))
+    {
+        return true;
+    }
+    return false;
+}
+
+char AI::numToPlay(int num)
+{
+    char play = 's';
+    switch (num)
+    {
+    case 0:
+        play = 't';
+        break;
+    case 1:
+        play = 'l';
+        break;
+    case 2:
+        play = 'b';
+        break;
+    case 3:
+        play = 'r';
+        break;
+    }
+    return play;
 }
