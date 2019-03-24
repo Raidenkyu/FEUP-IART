@@ -53,7 +53,7 @@ public:
     bool astar();
 
     std::pair<u_int, u_int> getNewCoords(int robotIndex, int direction, std::vector<std::pair<u_int, u_int>> robotsCoords);
-    Node * findNodeOnList(std::set<Node*> & nodes, std::pair<u_int,u_int> robotCoords, int robotIndex);
+    Node * findNodeOnList(std::set<Node*> & nodes, std::vector<std::pair<u_int,u_int>> robotsCoords);
     void releaseNodes(std::set<Node*> & nodes);
     bool detectCollision(std::pair<u_int,u_int> oldCoords, std::pair<u_int,u_int> newCoords);
     char numToPlay(int num);

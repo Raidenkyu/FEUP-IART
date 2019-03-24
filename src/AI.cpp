@@ -244,14 +244,14 @@ bool AI::astar()
                 vector<pair<u_int, u_int>> newRobotCoords = current->robotsCoords;
                 newRobotCoords[i] = newCoordinates;
                 if (detectCollision(current->robotsCoords[i], newCoordinates) ||
-                    findNodeOnList(closedSet, newCoordinates, i))
+                    findNodeOnList(closedSet, newRobotCoords))
                 {
                     continue;
                 }
 
                 u_int totalCost = current->G + 1;
 
-                Node *successor = findNodeOnList(openSet, newCoordinates, i);
+                Node *successor = findNodeOnList(openSet, newRobotCoords);
                 if (successor == nullptr)
                 {
                     successor = new Node(newRobotCoords, current);
@@ -265,6 +265,7 @@ bool AI::astar()
                 {
                     successor->parent = current;
                     successor->G = totalCost;
+                    successor->move = pair<u_int, char>(i, numToPlay(j));
                 }
             }
         }
@@ -308,11 +309,11 @@ pair<u_int, u_int> AI::getNewCoords(int robotIndex, int direction, vector<pair<u
     return newCoords;
 }
 
-Node *AI::findNodeOnList(set<Node *> &nodes, pair<u_int, u_int> robotCoords, int robotIndex)
+Node *AI::findNodeOnList(set<Node *> &nodes, vector<pair<u_int, u_int>> robotsCoords)
 {
     for (auto node : nodes)
     {
-        if (node->robotsCoords[robotIndex] == robotCoords)
+        if (node->robotsCoords == robotsCoords)
         {
             return node;
         }
