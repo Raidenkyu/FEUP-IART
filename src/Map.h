@@ -21,11 +21,15 @@ public:
     //Imprime o mapa com as posições originais
     void printMap(int level);
 
+    std::vector<std::vector<char>> getCharMap(int level, std::vector<std::pair<u_int, u_int>> robot_positions);
+
     //Devolve os valores originais
     std::vector<std::pair<u_int,u_int>> getRobotPosition(int level);
     std::vector<std::pair<u_int,u_int>> getRobotTargets(int level);
     std::vector<std::vector<char>> getMap(int level);
     u_int getNumberOfRobots(int level);
+
+
 
 };
 

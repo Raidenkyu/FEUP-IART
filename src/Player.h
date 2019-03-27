@@ -52,6 +52,7 @@ public:
     //Verifica se o jogo acabou, true se acabou ou false caso contrario
     bool checkEndGame();
     bool checkEndGame(std::vector<std::pair<u_int,u_int>> robot_positions);
+
 };
 
 #endif

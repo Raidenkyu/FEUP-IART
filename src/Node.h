@@ -6,7 +6,7 @@
 class Node
 {
   public:
-    uint G, H;
+    u_int G, H;
     std::vector<std::pair<u_int,u_int>> robotsCoords;
     Node *parent;
     std::pair<u_int,char> move;

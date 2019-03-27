@@ -87,7 +87,6 @@ bool AI::computeSolution()
         cout << "Invalid Algorithm" << endl;
         exit(0);
     }
-
     cout << "Solution computed" << endl;
     return solutionFound;
 }
@@ -120,7 +119,7 @@ bool AI::dfs()
 
 bool AI::dfs(int custo, vector<vector<char>> map_char, vector<pair<u_int, u_int>> robot_positions, vector<vector<pair<u_int, u_int>>> visited, vector<pair<u_int, char>> moves)
 {
-    if (custo > (this->level + 1) * 15)
+    if (custo > 20)
         return false;
 
     bool houve_sol = false;
@@ -360,89 +359,91 @@ char AI::numToPlay(int num)
     return play;
 }
 
-
 bool AI::bfs()
 {
-
-
-     
-    bool found = false;
-
-    queue<Node*> myqueue;
-    myqueue.push(new Node(this->robot_positions));
-
-    while(!found && !myqueue.empty()){
-
+    queue<pair<vector<pair<u_int,u_int>>,vector<pair<u_int, char>>>> myqueue;
+    vector<pair<u_int, char>> moves;
+    myqueue.push(make_pair(this->robot_positions,moves));
+    u_int custo=0;
+    u_int profundidade=1;
     
-    for (u_int i = 0; i < robot_positions.size(); i++)
+    while (!myqueue.empty())
     {
-
-        pair<u_int, u_int> current_position = myqueue.front()->robotsCoords[i];
-
-        pair<u_int, u_int> top_move = this->MoveTop(this->map_char, i, myqueue.front()->robotsCoords);
-        pair<u_int, u_int> bottom_move = this->MoveBottom(this->map_char, i, myqueue.front()->robotsCoords);
-        pair<u_int, u_int> left_move = this->MoveLeft(this->map_char, i, myqueue.front()->robotsCoords);
-        pair<u_int, u_int> right_move = this->MoveRight(this->map_char, i, myqueue.front()->robotsCoords);
-
-
-        if (top_move != current_position)
+        if (this->checkEndGame(myqueue.front().first))
         {
-            std::vector<std::pair<u_int,u_int>> robotsCoordsAux = myqueue.front()->robotsCoords;
-            robotsCoordsAux[i] = top_move;
-            Node* node = new Node(robotsCoordsAux, myqueue.front());
-            node->move = pair<u_int, char>(i, 't');
-            myqueue.push(node);
-            //cout << "Robot: "<< i << "Top" << top_move.first << top_move.second << endl;
+            this->best_custo=custo;
+            this->best_move=myqueue.front().second;
+            break;
+        }
+        vector<pair<u_int, u_int>> current_positions = myqueue.front().first;
+        vector<pair<u_int, char>> current_moves = myqueue.front().second;
+        if(profundidade!=myqueue.front().second.size())
+        {
+            profundidade=myqueue.front().second.size();
+            cout << myqueue.front().second.size() << endl;
+        }
+        myqueue.pop();
+
+        vector<vector<char>> char_map=this->map->getCharMap(this->level,current_positions);
         
-        }
-        if (bottom_move != current_position)
+        for (u_int i = 0; i < current_positions.size(); i++)
         {
-            std::vector<std::pair<u_int,u_int>> robotsCoordsAux = myqueue.front()->robotsCoords;
-            robotsCoordsAux[i] = bottom_move;
-            Node*  node = new Node(robotsCoordsAux, myqueue.front());
-            node->move = pair<u_int, char>(i, 'b');
-            myqueue.push(node);
-            // cout << "Robot: "<< i << "Bottom" << bottom_move.first << bottom_move.second << endl;
-            
-        }
-        if (left_move != current_position)
-        {
-           std::vector<std::pair<u_int,u_int>> robotsCoordsAux = myqueue.front()->robotsCoords;
-            robotsCoordsAux[i] = left_move;
-             Node*  node = new Node(robotsCoordsAux, myqueue.front());
-            node->move = pair<u_int, char>(i, 'l');
-            myqueue.push(node);
-            // cout << "Robot: "<< i << "Left" << left_move.first << left_move.second << endl;
+            pair<u_int, u_int> position=current_positions[i];
+        
+            pair<u_int, u_int> top_move = this->MoveTop(char_map, i, current_positions);
+            pair<u_int, u_int> bottom_move = this->MoveBottom(char_map, i, current_positions);
+            pair<u_int, u_int> left_move = this->MoveLeft(char_map, i, current_positions);
+            pair<u_int, u_int> right_move = this->MoveRight(char_map, i, current_positions);
 
+            if (top_move != position)
+            {
+                vector<pair<u_int, u_int>> robot_positions_new = current_positions;
+                vector<pair<u_int, char>> current_moves_new = current_moves;
+                current_moves_new.push_back(make_pair(i, 't'));
+                robot_positions_new[i] = top_move;
+                myqueue.push(make_pair(robot_positions_new,current_moves_new));
+                //cout << "Robot: "<< i << "Top" << top_move.first << top_move.second << endl;
+            }
+            if (bottom_move != position)
+            {
+                vector<pair<u_int, u_int>> robot_positions_new = current_positions;
+                vector<pair<u_int, char>> current_moves_new = current_moves;
+                current_moves_new.push_back(make_pair(i, 'b'));
+                robot_positions_new[i] = bottom_move;
+                myqueue.push(make_pair(robot_positions_new,current_moves_new));
+                //cout << "Robot: "<< i << "Bottom" << bottom_move.first << bottom_move.second << endl;
+            }
+            if (left_move != position)
+            {
+                vector<pair<u_int, u_int>> robot_positions_new = current_positions;
+                vector<pair<u_int, char>> current_moves_new = current_moves;
+                current_moves_new.push_back(make_pair(i, 'l'));
+                robot_positions_new[i] = left_move;
+                myqueue.push(make_pair(robot_positions_new,current_moves_new));
+                //cout << "Robot: "<< i << "Left" << left_move.first << left_move.second << endl;
+            }
+            if (right_move != position)
+            {
+                vector<pair<u_int, u_int>> robot_positions_new = current_positions;
+                vector<pair<u_int, char>> current_moves_new = current_moves;
+                current_moves_new.push_back(make_pair(i, 'r'));
+                robot_positions_new[i] = right_move;
+                myqueue.push(make_pair(robot_positions_new,current_moves_new));
+                //cout << "Robot: "<< i << "Right" << right_move.first << right_move.second << endl;
+            }
         }
-        if (right_move != current_position)
-        {
-            std::vector<std::pair<u_int,u_int>> robotsCoordsAux = myqueue.front()->robotsCoords;
-            robotsCoordsAux[i] = right_move;
-             Node* node = new Node(robotsCoordsAux, myqueue.front());
-            node->move = pair<u_int, char>(i, 'r');
-            myqueue.push(node);
-            // cout << "Robot: "<< i << "Right" << right_move.first << right_move.second << endl;
-            
-             
-        }
+        //cout << "Front: "<< myqueue.front()->robotsCoords[0].first << myqueue.front()->robotsCoords[0].second << endl;
     }
-    //cout << "Front: "<< myqueue.front()->robotsCoords[0].first << myqueue.front()->robotsCoords[0].second << endl;
-    if(this->checkEndGame(myqueue.front()->robotsCoords)){
-        TranslateToBestMove(myqueue.front());
-        found = true;
-    }
-    myqueue.pop();
+
+    return true;
 }
 
-return found;
-}
+void AI::TranslateToBestMove(Node *node)
+{
 
-void AI::TranslateToBestMove(Node * node){
+    this->best_move.clear();
 
-this->best_move.clear();
-
-  while (node != nullptr)
+    while (node != nullptr)
     {
         if (node->move.second != 'f')
         {
@@ -450,7 +451,7 @@ this->best_move.clear();
         }
         node = node->parent;
     }
-/* cout << "Move 0: " << node->move.first << node->move.second << endl;
+    /* cout << "Move 0: " << node->move.first << node->move.second << endl;
 int i = 1;
     while(node->parent != nullptr){
     cout << node->parent << endl;
@@ -459,7 +460,7 @@ int i = 1;
     this->best_move.push_back(node->);
     node = node->parent;
      */
-  /*   }
+    /*   }
     cin.get();
     for(unsigned int i = 0; i < this->best_move.size(); i++){
         cout << this->best_move[i].first << this->best_move[i].second << endl;
