@@ -6,7 +6,6 @@ Map::Map(string file)
 {
     ifstream maps_file("res/maps.txt");
     string line;
-    vector<vector<char>> matrix;
     if (maps_file.is_open())
     {
         int map_quantity;
@@ -20,7 +19,6 @@ Map::Map(string file)
 
             u_int n_robots;
             maps_file >> n_robots;
-            this->number_of_robots.push_back(n_robots);
             vector<pair<u_int, u_int>> robot_positions, robot_targets;
             for (u_int i = 0; i < n_robots; i++)
             {
@@ -29,9 +27,20 @@ Map::Map(string file)
                 robot_positions.push_back(make_pair(positionX, positionY));
                 robot_targets.push_back(make_pair(targetX, targetY));
             }
+            
+            u_int n_robots_no_target;
+            maps_file >> n_robots_no_target;
+            for (u_int i = 0; i < n_robots_no_target; i++)
+            {
+                u_int positionX, positionY;
+                maps_file >> positionX >> positionY;
+                robot_positions.push_back(make_pair(positionX, positionY));
+            }
             this->robot_positions.push_back(robot_positions);
             this->robot_targets.push_back(robot_targets);
 
+            this->number_of_robots.push_back(n_robots+n_robots_no_target);
+            vector<vector<char>> matrix;
             for (u_int i = 0; i < sizeY; i++)
             {
                 vector<char> temp;
