@@ -7,24 +7,20 @@ using namespace std;
 AI::AI(int level, Map *map, int algorithm) : Player(level, map),
                                              algorithm(algorithm)
 {
-
-    if (this->computeSolution())
-    {
-        this->alg_calculated = true;
-    }
-    this->index_sol=0;
+    this->alg_calculated = this->computeSolution();
+    this->index_sol = 0;
 }
 
 bool AI::makeMove()
 {
 
-    this->map->printMap(this->level, this->robot_positions);
-    cout << "Press ENTER to get next step" << endl;
-
-    cin.get();
-
     if (this->alg_calculated)
     {
+
+        this->map->printMap(this->level, this->robot_positions);
+        cout << "Press ENTER to get next step" << endl;
+
+        cin.get();
         if (this->index_sol >= this->best_move.size())
         {
             this->map->printMap(this->level, this->robot_positions);
@@ -65,6 +61,11 @@ bool AI::makeMove()
             return false;
         }
     }
+    else
+    {
+        cout << "Solution not found! " << endl;
+        return false;
+    }
     return true;
 }
 
@@ -88,17 +89,32 @@ bool AI::computeSolution()
         cout << "Invalid Algorithm" << endl;
         exit(0);
     }
+    if(solutionFound)
     cout << "Solution computed" << endl;
     return solutionFound;
 }
 
-bool AI::alreadyBeenOn(std::vector<std::pair<u_int, u_int>> visited, std::pair<u_int, u_int> position)
+bool AI::alreadyBeenOn(vector<vector<pair<u_int, u_int>>> visited, u_int i, pair<u_int, u_int> position, vector<pair<u_int, u_int>> robot_positions)
 {
-    for (int i = (int)visited.size() - 1; i >= 0; i--)
+    if (!this->evitar_ciclos)
+        return false;
+    u_int conta = 0;
+    for (int j = (int)visited.size() - 1; j >= 0; j--)
     {
-        if (position.first == visited[i].first && position.second == visited[i].second)
+        if (position.first == visited[j][i].first && position.second == visited[j][i].second)
         {
-            return true;
+            conta = 1;
+            for (u_int k = 0; k < visited[j].size(); k++)
+            {
+                if (i == k)
+                    continue;
+                if (robot_positions[k].first == visited[j][k].first && robot_positions[k].second == visited[j][k].second)
+                {
+                    conta++;
+                }
+            }
+            if (conta == visited[j].size())
+                return true;
         }
     }
     return false;
@@ -107,20 +123,27 @@ bool AI::alreadyBeenOn(std::vector<std::pair<u_int, u_int>> visited, std::pair<u
 bool AI::dfs()
 {
     vector<vector<pair<u_int, u_int>>> visited;
-    for (u_int i = 0; i < this->robot_positions.size(); i++)
-    {
-        vector<pair<u_int, u_int>> temp;
-        visited.push_back(temp);
-    }
+    visited.push_back(this->robot_positions);
     vector<pair<u_int, char>> moves;
     this->best_move.clear();
     this->best_custo = INT_MAX;
+    u_int limite;
+    cout << "Limite de pesquisa? ";
+    cin >> limite;
+    this->limite = limite;
+    char lido;
+    cout << "Quer evitar repeticoes?(Y/N) ";
+    cin >> lido;
+    if (lido == 'Y' || lido == 'y')
+        this->evitar_ciclos = true;
+    else
+        this->evitar_ciclos = false;
     return this->dfs(1, this->map_char, this->robot_positions, visited, moves);
 }
 
 bool AI::dfs(int custo, vector<vector<char>> map_char, vector<pair<u_int, u_int>> robot_positions, vector<vector<pair<u_int, u_int>>> visited, vector<pair<u_int, char>> moves)
 {
-    if (custo > 20)
+    if (custo > (int)this->limite)
         return false;
 
     bool houve_sol = false;
@@ -135,75 +158,79 @@ bool AI::dfs(int custo, vector<vector<char>> map_char, vector<pair<u_int, u_int>
         pair<u_int, u_int> left_move = this->MoveLeft(map_char, i, robot_positions);
         pair<u_int, u_int> right_move = this->MoveRight(map_char, i, robot_positions);
 
-        if (top_move != current_position && !this->alreadyBeenOn(visited[i], top_move))
+        if (top_move != current_position && !this->alreadyBeenOn(visited, i, top_move, robot_positions))
         {
             vector<pair<u_int, u_int>> copy_robot_positions = robot_positions;
             vector<vector<pair<u_int, u_int>>> copy_visited = visited;
             vector<pair<u_int, char>> copy_moves = moves;
             vector<vector<char>> copy_map_char = map_char;
             copy_moves.push_back(make_pair(i, 't'));
-            copy_visited[i].push_back(current_position);
             this->replacePosition(i, current_position, top_move, copy_robot_positions, copy_map_char);
             if (custo < this->best_custo && this->checkEndGame(copy_robot_positions))
             {
                 this->best_custo = custo;
                 this->best_move = copy_moves;
+                cout << "Found one solution with cust: " << custo;
                 return true;
             }
+            copy_visited.push_back(copy_robot_positions);
             if (this->dfs(custo + 1, copy_map_char, copy_robot_positions, copy_visited, copy_moves))
                 houve_sol = true;
         }
-        if (bottom_move != current_position && !this->alreadyBeenOn(visited[i], bottom_move))
+        if (bottom_move != current_position && !this->alreadyBeenOn(visited, i, bottom_move, robot_positions))
         {
             vector<pair<u_int, u_int>> copy_robot_positions = robot_positions;
             vector<vector<pair<u_int, u_int>>> copy_visited = visited;
             vector<pair<u_int, char>> copy_moves = moves;
             vector<vector<char>> copy_map_char = map_char;
             copy_moves.push_back(make_pair(i, 'b'));
-            copy_visited[i].push_back(current_position);
             this->replacePosition(i, current_position, bottom_move, copy_robot_positions, copy_map_char);
             if (custo < this->best_custo && this->checkEndGame(copy_robot_positions))
             {
                 this->best_custo = custo;
                 this->best_move = copy_moves;
+                cout << "Found one solution with cust: " << custo;
                 return true;
             }
+            copy_visited.push_back(copy_robot_positions);
             if (this->dfs(custo + 1, copy_map_char, copy_robot_positions, copy_visited, copy_moves))
                 houve_sol = true;
         }
-        if (left_move != current_position && !this->alreadyBeenOn(visited[i], left_move))
+        if (left_move != current_position && !this->alreadyBeenOn(visited, i, left_move, robot_positions))
         {
             vector<pair<u_int, u_int>> copy_robot_positions = robot_positions;
             vector<vector<pair<u_int, u_int>>> copy_visited = visited;
             vector<pair<u_int, char>> copy_moves = moves;
             vector<vector<char>> copy_map_char = map_char;
             copy_moves.push_back(make_pair(i, 'l'));
-            copy_visited[i].push_back(current_position);
             this->replacePosition(i, current_position, left_move, copy_robot_positions, copy_map_char);
             if (custo < this->best_custo && this->checkEndGame(copy_robot_positions))
             {
                 this->best_custo = custo;
                 this->best_move = copy_moves;
+                cout << "Found one solution with cust: " << custo;
                 return true;
             }
+            copy_visited.push_back(copy_robot_positions);
             if (this->dfs(custo + 1, copy_map_char, copy_robot_positions, copy_visited, copy_moves))
                 houve_sol = true;
         }
-        if (right_move != current_position && !this->alreadyBeenOn(visited[i], right_move))
+        if (right_move != current_position && !this->alreadyBeenOn(visited, i, right_move, robot_positions))
         {
             vector<pair<u_int, u_int>> copy_robot_positions = robot_positions;
             vector<vector<pair<u_int, u_int>>> copy_visited = visited;
             vector<pair<u_int, char>> copy_moves = moves;
             vector<vector<char>> copy_map_char = map_char;
             copy_moves.push_back(make_pair(i, 'r'));
-            copy_visited[i].push_back(current_position);
             this->replacePosition(i, current_position, right_move, copy_robot_positions, copy_map_char);
             if (custo < this->best_custo && this->checkEndGame(copy_robot_positions))
             {
                 this->best_custo = custo;
                 this->best_move = copy_moves;
+                cout << "Found one solution with cust: " << custo;
                 return true;
             }
+            copy_visited.push_back(copy_robot_positions);
             if (this->dfs(custo + 1, copy_map_char, copy_robot_positions, copy_visited, copy_moves))
                 houve_sol = true;
         }
@@ -362,35 +389,35 @@ char AI::numToPlay(int num)
 
 bool AI::bfs()
 {
-    queue<pair<vector<pair<u_int,u_int>>,vector<pair<u_int, char>>>> myqueue;
+    queue<pair<vector<pair<u_int, u_int>>, vector<pair<u_int, char>>>> myqueue;
     vector<pair<u_int, char>> moves;
-    myqueue.push(make_pair(this->robot_positions,moves));
-    u_int custo=0;
-    u_int profundidade=1;
-    
+    myqueue.push(make_pair(this->robot_positions, moves));
+    u_int custo = 0;
+    u_int profundidade = 1;
+
     while (!myqueue.empty())
     {
         if (this->checkEndGame(myqueue.front().first))
         {
-            this->best_custo=custo;
-            this->best_move=myqueue.front().second;
+            this->best_custo = custo;
+            this->best_move = myqueue.front().second;
             break;
         }
         vector<pair<u_int, u_int>> current_positions = myqueue.front().first;
         vector<pair<u_int, char>> current_moves = myqueue.front().second;
-        if(profundidade!=myqueue.front().second.size())
+        if (profundidade != myqueue.front().second.size())
         {
-            profundidade=myqueue.front().second.size();
+            profundidade = myqueue.front().second.size();
             cout << myqueue.front().second.size() << endl;
         }
         myqueue.pop();
 
-        vector<vector<char>> char_map=this->map->getCharMap(this->level,current_positions);
-        
+        vector<vector<char>> char_map = this->map->getCharMap(this->level, current_positions);
+
         for (u_int i = 0; i < current_positions.size(); i++)
         {
-            pair<u_int, u_int> position=current_positions[i];
-        
+            pair<u_int, u_int> position = current_positions[i];
+
             pair<u_int, u_int> top_move = this->MoveTop(char_map, i, current_positions);
             pair<u_int, u_int> bottom_move = this->MoveBottom(char_map, i, current_positions);
             pair<u_int, u_int> left_move = this->MoveLeft(char_map, i, current_positions);
@@ -402,7 +429,7 @@ bool AI::bfs()
                 vector<pair<u_int, char>> current_moves_new = current_moves;
                 current_moves_new.push_back(make_pair(i, 't'));
                 robot_positions_new[i] = top_move;
-                myqueue.push(make_pair(robot_positions_new,current_moves_new));
+                myqueue.push(make_pair(robot_positions_new, current_moves_new));
                 //cout << "Robot: "<< i << "Top" << top_move.first << top_move.second << endl;
             }
             if (bottom_move != position)
@@ -411,7 +438,7 @@ bool AI::bfs()
                 vector<pair<u_int, char>> current_moves_new = current_moves;
                 current_moves_new.push_back(make_pair(i, 'b'));
                 robot_positions_new[i] = bottom_move;
-                myqueue.push(make_pair(robot_positions_new,current_moves_new));
+                myqueue.push(make_pair(robot_positions_new, current_moves_new));
                 //cout << "Robot: "<< i << "Bottom" << bottom_move.first << bottom_move.second << endl;
             }
             if (left_move != position)
@@ -420,7 +447,7 @@ bool AI::bfs()
                 vector<pair<u_int, char>> current_moves_new = current_moves;
                 current_moves_new.push_back(make_pair(i, 'l'));
                 robot_positions_new[i] = left_move;
-                myqueue.push(make_pair(robot_positions_new,current_moves_new));
+                myqueue.push(make_pair(robot_positions_new, current_moves_new));
                 //cout << "Robot: "<< i << "Left" << left_move.first << left_move.second << endl;
             }
             if (right_move != position)
@@ -429,7 +456,7 @@ bool AI::bfs()
                 vector<pair<u_int, char>> current_moves_new = current_moves;
                 current_moves_new.push_back(make_pair(i, 'r'));
                 robot_positions_new[i] = right_move;
-                myqueue.push(make_pair(robot_positions_new,current_moves_new));
+                myqueue.push(make_pair(robot_positions_new, current_moves_new));
                 //cout << "Robot: "<< i << "Right" << right_move.first << right_move.second << endl;
             }
         }

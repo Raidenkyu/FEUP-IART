@@ -20,7 +20,7 @@ private:
     //pega no node final e mete os paizinhos dele todos no best move (incluindo ele), em ordem inversa
     void TranslateToBestMove(Node * node);
     //testa se um posição já foi passada
-    bool alreadyBeenOn(std::vector<std::pair<u_int,u_int>> visited,std::pair<u_int,u_int> position);
+    bool alreadyBeenOn(std::vector<std::vector<std::pair<u_int,u_int>>> visited,u_int i, std::pair<u_int,u_int> position,std::vector<std::pair<u_int,u_int>> robot_position);
 
     //melhor movimento
     std::vector<std::pair<u_int,char>> best_move;
@@ -36,6 +36,8 @@ private:
     //Saber se o algoritmo já foi calculado
     bool alg_calculated;
     u_int index_sol;
+    u_int limite;
+    bool evitar_ciclos = true;
 
 public:
     AI(){}
