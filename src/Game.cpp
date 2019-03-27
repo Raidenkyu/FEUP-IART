@@ -21,7 +21,7 @@ void Game::loop()
 
 void Game::menu()
 {
-
+    clearScreen();
     int playerChoice, levelChoice, algorithmChoice;
 
     cout << "  _____       _           _     _           _                _       _   _     " << endl;
