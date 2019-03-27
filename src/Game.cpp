@@ -4,25 +4,24 @@ using namespace std;
 
 Game::Game(string file)
 {
-    this->map=new Map(file);
+    this->map = new Map(file);
     this->menu();
-   
 }
 
 void Game::loop()
 {
-    cin.ignore(256,'\n');
-    while(this->player->makeMove())
+    cin.ignore(256, '\n');
+    while (this->player->makeMove())
     {
-        if(this->player->checkEndGame())
-            return ;
+        if (this->player->checkEndGame())
+            return;
     }
 }
 
 void Game::menu()
 {
 
-    int playerChoice, levelChoice, algorithmChoice;
+    int playerChoice, levelChoice = -1, algorithmChoice;
 
     cout << "  _____       _           _     _           _                _       _   _     " << endl;
     cout << " |  __ \\     | |         | |   | |         | |              (_)     | | | |    " << endl;
@@ -40,21 +39,23 @@ void Game::menu()
 
     cout << "Choose the level (int):";
 
-while(!(levelChoice==0||levelChoice ==1)){
-    cin >> levelChoice;
-}
-    if(playerChoice == 0){
-        player = new Human(level,this->map);
+    while (!(levelChoice >= 0))
+    {
+        cin >> levelChoice;
+    }
+    if (playerChoice == 0)
+    {
+        player = new Human(levelChoice-1, this->map);
         return;
     }
-    else if(playerChoice == 1){
-    cout << "Choose the algorithm:" << endl;
-    cout << "0 - Depth-First Search" << endl;
-    cout << "1 - Breadth-First Search" << endl;
-    cout << "2 - A-Star *****" << endl;
-    cin >> algorithmChoice;
-    
-     player = new AI(level,this->map, algorithmChoice);
-    }
+    else if (playerChoice == 1)
+    {
+        cout << "Choose the algorithm:" << endl;
+        cout << "0 - Depth-First Search" << endl;
+        cout << "1 - Breadth-First Search" << endl;
+        cout << "2 - A-Star *****" << endl;
+        cin >> algorithmChoice;
 
+        player = new AI(levelChoice-1, this->map, algorithmChoice);
+    }
 }

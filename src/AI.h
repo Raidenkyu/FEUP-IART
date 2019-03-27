@@ -57,6 +57,8 @@ public:
     void releaseNodes(std::set<Node*> & nodes);
     bool detectCollision(std::pair<u_int,u_int> oldCoords, std::pair<u_int,u_int> newCoords);
     char numToPlay(int num);
+
+    void setIndexSol(u_int index){this->index_sol=index;}
 };
 
 #endif

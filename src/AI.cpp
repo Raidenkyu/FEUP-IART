@@ -12,6 +12,7 @@ AI::AI(int level, Map *map, int algorithm) : Player(level, map),
     {
         this->alg_calculated = true;
     }
+    this->index_sol=0;
 }
 
 bool AI::makeMove()
