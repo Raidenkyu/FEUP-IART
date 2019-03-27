@@ -20,6 +20,7 @@ void Game::loop()
 
 void Game::menu()
 {
+    clearScreen();
 
     int playerChoice, levelChoice = -1, algorithmChoice;
 

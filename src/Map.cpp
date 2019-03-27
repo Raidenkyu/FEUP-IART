@@ -88,9 +88,9 @@ void Map::printMap(int level, vector<pair<u_int, u_int>> robot_positions)
         for (u_int j = 0; j < matrix[i].size(); j++)
         {
             if(matrix[i][j]=='.')
-                cout << ' ';
+                cout << " "  << ' ';
             else
-                cout << matrix[i][j];
+                cout << " " << matrix[i][j];
         }
         cout << endl;
     }
