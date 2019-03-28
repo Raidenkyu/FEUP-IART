@@ -41,6 +41,9 @@ private:
 
     long expancoes;
 
+    std::chrono::high_resolution_clock::time_point start;
+    std::chrono::high_resolution_clock::time_point end;
+
 public:
     AI(){}
     AI(int level,Map * map, int algorithm);
