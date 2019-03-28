@@ -12,6 +12,7 @@ private:
     u_int level;
     Player * player;
     Map * map;
+    int levelChoose();
     
 public:
     Game(std::string file);

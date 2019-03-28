@@ -127,10 +127,7 @@ bool AI::dfs()
     vector<pair<u_int, char>> moves;
     this->best_move.clear();
     this->best_custo = INT_MAX;
-    u_int limite;
-    cout << "Limite de pesquisa? ";
-    cin >> limite;
-    this->limite = limite;
+    this->limite = INT_MAX;
     char lido;
     cout << "Quer evitar repeticoes?(Y/N) ";
     cin >> lido;

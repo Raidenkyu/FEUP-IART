@@ -168,3 +168,8 @@ vector<vector<char>> Map::getMap(int level)
 {
     return this->map[level];
 }
+
+u_int Map::getMapNumber()
+{
+    return this->map.size();
+}
