@@ -297,12 +297,12 @@ bool Player::checkEndGame()
     }
     return true;
 }
-bool Player::checkEndGame(std::vector<std::pair<u_int,u_int>> robot_positions)
+bool Player::checkEndGame(vector<pair<u_int,u_int>> robot_pos)
 {
     vector<pair<u_int,u_int>> targets=this->map->getRobotTargets(this->level);
     for(u_int i=0;i<targets.size();i++)
     {
-        if(!(targets[i].first==robot_positions[i].first && targets[i].second == robot_positions[i].second))
+        if(!(targets[i].first==robot_pos[i].first && targets[i].second == robot_pos[i].second))
             return false;
     }
     return true;

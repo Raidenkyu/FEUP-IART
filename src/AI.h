@@ -12,7 +12,7 @@ class AI: public Player {
 private:
 
     //função dfs recursiva
-    bool dfs(int custo,std::vector<std::vector<char>> map_char,std::vector<std::pair<u_int,u_int>> robot_positions,std::vector<std::vector<std::pair<u_int,u_int>>> visited,std::vector<std::pair<u_int,char>> moves);
+    bool dfs(int custo,std::vector<std::vector<char>> map_char,std::vector<std::pair<u_int,u_int>> robot_positions,std::vector<std::vector<std::pair<u_int,u_int>>> &visited,std::vector<std::pair<u_int,char>> moves);
 
     //funcao bfs
     bool bfs();
@@ -38,6 +38,8 @@ private:
     u_int index_sol;
     u_int limite;
     bool evitar_ciclos = true;
+
+    long expancoes;
 
 public:
     AI(){}

@@ -77,7 +77,7 @@ void Game::menu()
 int Game::levelChoose()
 {
     int levelChoice = -1;
-    while (!(levelChoice >= 0 && levelChoice < (int)this->map->getMapNumber()))
+    while (!(levelChoice >= 0 && levelChoice <= (int)this->map->getMapNumber()))
     {
         cout << "Choose the level (int):";
         cin >> levelChoice;
