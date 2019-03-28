@@ -23,7 +23,12 @@ u_int Node::computeHeuristic(vector<pair<u_int,u_int>> targets){
     for(unsigned int i = 0; i < targets.size(); i++){
         deltaX= abs(((int)(robotsCoords[i].first)) - ((int)(targets[i].first)));
         deltaY= abs(((int)(robotsCoords[i].second)) - ((int)(targets[i].second)));
-        h+= deltaX + deltaY;
+        if(deltaX != 0){
+            h++;
+        }
+        if(deltaY != 0){
+            h++;
+        }
     }
     this->H = h;
     return h;

@@ -297,6 +297,9 @@ bool AI::astar()
             }
         }
     }
+    if(!this->checkEndGame(current->robotsCoords)){
+        return false;
+    }
     while (current != nullptr)
     {
         if (current->move.second != 'f')
@@ -308,7 +311,7 @@ bool AI::astar()
     releaseNodes(openSet);
     releaseNodes(closedSet);
 
-    return (this->best_move.size() > 0 ? true : false);
+    return true;
 }
 
 pair<u_int, u_int> AI::getNewCoords(int robotIndex, int direction, vector<pair<u_int, u_int>> robotsCoords)
