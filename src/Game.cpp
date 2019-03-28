@@ -58,6 +58,7 @@ void Game::menu()
             cout << "0 - Depth-First Search" << endl;
             cout << "1 - Breadth-First Search" << endl;
             cout << "2 - A-Star *****" << endl;
+            cout << "3 - Profundidade Iterativa" << endl;
             cin >> algorithmChoice;
 
             player = new AI(levelChoice - 1, this->map, algorithmChoice);
