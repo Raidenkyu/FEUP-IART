@@ -8,6 +8,6 @@ int main()
 {
     
     Game *LabyrinthRobots = new Game("res/maps.txt");
-    LabyrinthRobots->loop();
+    LabyrinthRobots->menu();
     return 0;
 }

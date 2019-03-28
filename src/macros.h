@@ -7,6 +7,7 @@
 #include <climits>
 #include <fstream>
 #include <string>
+#include <chrono>
 
 
 typedef unsigned int u_int;

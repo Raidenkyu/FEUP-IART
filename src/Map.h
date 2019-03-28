@@ -29,6 +29,8 @@ public:
     std::vector<std::vector<char>> getMap(int level);
     u_int getNumberOfRobots(int level);
 
+    u_int getMapNumber();
+
 
 
 };
