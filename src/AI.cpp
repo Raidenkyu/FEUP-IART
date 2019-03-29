@@ -156,8 +156,13 @@ bool AI::dfs()
     vector<pair<u_int, char>> moves;
     this->best_move.clear();
     this->best_custo = INT_MAX;
+    string ler;
+    do
+    {
     cout << "Limite maximo de pesquisa: ";
-    cin >> this->limite;
+        cin >> ler;
+    } while (!is_number(ler));
+    this->limite = stoi(ler);
     char lido;
     cout << "Quer evitar repeticoes?(Y/N) ";
     cin >> lido;
@@ -250,8 +255,13 @@ bool AI::iterativeDfs()
     this->evitar_ciclos = true;
     this->limite = 1;
     u_int max_limite;
+    string ler;
+    do
+    {
     cout << "Limite maximo: ";
-    cin >> max_limite;
+        cin >> ler;
+    } while (!is_number(ler));
+    max_limite = stoi(ler);
     this->start = chrono::high_resolution_clock::now();
     cout << "Limite atual: " << this->limite << endl;
     while (!this->dfs(1, this->map_char, this->robot_positions, visited, moves))

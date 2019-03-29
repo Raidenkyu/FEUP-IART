@@ -8,93 +8,99 @@
 #include "Node.h"
 #include <set>
 
-class Info{
-  public:
-  Info(std::vector<std::pair<u_int,u_int>> robot_positions):robot_positions(robot_positions) {};
-  std::vector<std::pair<u_int,u_int>> robot_positions;
+class Info
+{
+public:
+  Info(std::vector<std::pair<u_int, u_int>> robot_positions) : robot_positions(robot_positions){};
+  std::vector<std::pair<u_int, u_int>> robot_positions;
 
-  bool operator< (const Info& inf) const
-    {
-      if(this->robot_positions < inf.robot_positions)
+  bool operator<(const Info &inf) const
+  {
+    if (this->robot_positions < inf.robot_positions)
       return true;
-      else
+    else
       return false;
-    }
-    bool operator== (const Info& inf) const
-    {
-      if(this->robot_positions == inf.robot_positions)
+  }
+  bool operator==(const Info &inf) const
+  {
+    if (this->robot_positions == inf.robot_positions)
       return true;
-      else
+    else
       return false;
-    }
+  }
 };
 
 class AI : public Player
 {
-  private:
-    //função dfs recursiva
-    bool dfs(int custo, std::vector<std::vector<char>> map_char, std::vector<std::pair<u_int, u_int>> robot_positions, std::map<Info, u_int> &visited, std::vector<std::pair<u_int, char>> moves);
+private:
+  //função dfs recursiva
+  bool dfs(int custo, std::vector<std::vector<char>> map_char, std::vector<std::pair<u_int, u_int>> robot_positions, std::map<Info, u_int> &visited, std::vector<std::pair<u_int, char>> moves);
 
-    //funcao bfs
-    bool bfs();
+  //funcao bfs
+  bool bfs();
 
-    //pega no node final e mete os paizinhos dele todos no best move (incluindo ele), em ordem inversa
-    void TranslateToBestMove(Node *node);
-    //testa se um posição já foi passada
-    bool alreadyBeenOn(std::map<Info, u_int> &visited, u_int max_search, u_int i, std::pair<u_int, u_int> position, std::vector<std::pair<u_int, u_int>> robot_position);
-    
-    //melhor movimento
-    std::vector<std::pair<u_int, char>> best_move;
-    //melhor custo
-    int best_custo;
+  //pega no node final e mete os paizinhos dele todos no best move (incluindo ele), em ordem inversa
+  void TranslateToBestMove(Node *node);
+  //testa se um posição já foi passada
+  bool alreadyBeenOn(std::map<Info, u_int> &visited, u_int max_search, u_int i, std::pair<u_int, u_int> position, std::vector<std::pair<u_int, u_int>> robot_position);
 
-    //algoritmo a usar
-    int algorithm;
+  //melhor movimento
+  std::vector<std::pair<u_int, char>> best_move;
+  //melhor custo
+  int best_custo;
 
-    //Chooses one of the existing algorithms and computes a solution
-    bool computeSolution();
+  //algoritmo a usar
+  int algorithm;
 
-    //Saber se o algoritmo já foi calculado
-    bool alg_calculated;
-    u_int index_sol;
-    u_int limite;
-    bool evitar_ciclos = true;
+  //Chooses one of the existing algorithms and computes a solution
+  bool computeSolution();
 
-    long expancoes;
+  //Saber se o algoritmo já foi calculado
+  bool alg_calculated;
+  u_int index_sol;
+  u_int limite;
+  bool evitar_ciclos = true;
 
-    std::chrono::high_resolution_clock::time_point start;
-    std::chrono::high_resolution_clock::time_point end;
+  long expancoes;
 
-  public:
-    AI() {}
-    AI(int level, Map *map, int algorithm);
-    AI(int level, std::vector<std::pair<u_int,u_int>> robot_positions, Map * map);
+  std::chrono::high_resolution_clock::time_point start;
+  std::chrono::high_resolution_clock::time_point end;
 
-    //faz movimento de AI
-    bool makeMove();
+  bool is_number(const std::string &s)
+  {
+    return !s.empty() && std::find_if(s.begin(),
+                                      s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
+  }
 
-    //faz a procura em profundidade
-    bool dfs();
+public:
+  AI() {}
+  AI(int level, Map *map, int algorithm);
+  AI(int level, std::vector<std::pair<u_int, u_int>> robot_positions, Map *map);
 
-    //A-star Search
-    bool astar();
+  //faz movimento de AI
+  bool makeMove();
 
-    //Greedy Search
-    bool greedy();
+  //faz a procura em profundidade
+  bool dfs();
 
-    //Profundidade iterativa
-    bool iterativeDfs();
+  //A-star Search
+  bool astar();
 
+  //Greedy Search
+  bool greedy();
 
-    std::pair<u_int, u_int> getNewCoords(int robotIndex, int direction, Node *node);
-    Node *findNodeOnList(std::set<Node *> &nodes, std::vector<std::pair<u_int, u_int>> robotsCoords);
-    void releaseNodes(std::set<Node *> &nodes);
-    bool detectCollision(std::pair<u_int, u_int> oldCoords, std::pair<u_int, u_int> newCoords);
-    char numToPlay(int num);
+  //Profundidade iterativa
+  bool iterativeDfs();
 
-    void setIndexSol(u_int index) { this->index_sol = index; }
+  std::pair<u_int, u_int> getNewCoords(int robotIndex, int direction, Node *node);
+  Node *findNodeOnList(std::set<Node *> &nodes, std::vector<std::pair<u_int, u_int>> robotsCoords);
+  void releaseNodes(std::set<Node *> &nodes);
+  bool detectCollision(std::pair<u_int, u_int> oldCoords, std::pair<u_int, u_int> newCoords);
+  char numToPlay(int num);
 
-    bool get_best_move();
+  void setIndexSol(u_int index) { this->index_sol = index; }
+
+  bool get_best_move();
 };
 
 #endif

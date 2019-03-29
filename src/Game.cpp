@@ -17,8 +17,10 @@ void Game::loop()
     }
 }
 
+
 void Game::menu()
 {
+    string ler;
     while (true)
     {
         clearScreen();
@@ -33,12 +35,15 @@ void Game::menu()
         cout << " |_|  \\_\\___/|_.__/ \\___/ \\__| |______\\__,_|_.__/ \\__, |_|  |_|_| |_|\\__|_| |_|" << endl;
         cout << "                                                   __/ |                       " << endl;
         cout << "                                                  |___/                       " << endl;
+        do
+        {
         cout << "Choose the game mode:" << endl;
         cout << "0 - Exit" << endl;
         cout << "1 - Humans" << endl;
         cout << "2 - Bots" << endl;
-
-        cin >> playerChoice;
+            cin >> ler;
+        } while (!is_number(ler));
+        playerChoice = stoi(ler);
 
         if (playerChoice == 0)
             return;
@@ -54,6 +59,9 @@ void Game::menu()
         else if (playerChoice == 2)
         {
             levelChoice = this->levelChoose();
+
+            do
+            {
             cout << "Choose the algorithm:" << endl;
             cout << "0 - Depth-First Search" << endl;
             cout << "1 - Breadth-First Search" << endl;
@@ -61,7 +69,9 @@ void Game::menu()
             cout << "3 - Iterative Deepening Depth-First Search" << endl;
             cout << "4 - Greedy Algorithm" << endl;
             cout << "5 - Second A*" << endl;
-            cin >> algorithmChoice;
+                cin >> ler;
+            } while (!is_number(ler));
+            algorithmChoice = stoi(ler);
 
             player = new AI(levelChoice - 1, this->map, algorithmChoice);
             this->loop();
@@ -79,11 +89,16 @@ void Game::menu()
 
 int Game::levelChoose()
 {
-    int levelChoice = -1;
-    while (!(levelChoice >= 0 && levelChoice <= (int)this->map->getMapNumber()))
+    int levelChoice = 0;
+    string ler;
+    while (!(levelChoice > 0 && levelChoice <= (int)this->map->getMapNumber()))
     {
-        cout << "Choose the level (int):";
-        cin >> levelChoice;
+        do
+        {
+            cout << "Choose the level (int):";
+            cin >> ler;
+        } while (!is_number(ler));
+        levelChoice = stoi(ler);
     }
     return levelChoice;
 }

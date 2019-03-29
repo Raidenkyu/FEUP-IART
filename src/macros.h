@@ -9,6 +9,8 @@
 #include <string>
 #include <chrono>
 #include <map>
+#include <algorithm>
+#include <cctype>
 
 
 typedef unsigned int u_int;
