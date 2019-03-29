@@ -15,6 +15,9 @@ class Node
   
     u_int getScore();
     u_int computeHeuristic(std::vector<std::pair<u_int,u_int>> targets);
+    u_int optimistic(std::vector<std::pair<u_int,u_int>> targets);
+    static HEURISTIC heuristic;
+    static void setHeuristic(HEURISTIC h);
 };
 
 #endif

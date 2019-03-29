@@ -19,6 +19,10 @@ enum ALGORITHM{
     DFS, BFS, ASTAR, IDFS, GREEDY, ASTARSECOND
 };
 
+enum HEURISTIC{
+    OPTIMISTIC
+};
+
 #ifdef _WIN32 // To clear the screen depending in the User OS
 #define clearScreen() system("cls");
 #else
