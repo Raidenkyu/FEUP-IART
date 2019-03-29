@@ -61,7 +61,7 @@ public:
 
     bool iterativeDfs();
 
-    std::pair<u_int, u_int> getNewCoords(int robotIndex, int direction, std::vector<std::pair<u_int, u_int>> robotsCoords);
+    std::pair<u_int, u_int> getNewCoords(int robotIndex, int direction, Node * node);
     Node * findNodeOnList(std::set<Node*> & nodes, std::vector<std::pair<u_int,u_int>> robotsCoords);
     void releaseNodes(std::set<Node*> & nodes);
     bool detectCollision(std::pair<u_int,u_int> oldCoords, std::pair<u_int,u_int> newCoords);

@@ -281,7 +281,7 @@ bool AI::astar()
 {
     Node *current = nullptr;
     set<Node *> openSet, closedSet;
-    openSet.insert(new Node(this->robot_positions));
+    openSet.insert(new Node(this->robot_positions,this->map_char));
 
     while (!openSet.empty())
     {
@@ -306,9 +306,10 @@ bool AI::astar()
         {
             for (int j = 0; j < 4; j++)
             {
-                pair<u_int, u_int> newCoordinates = getNewCoords(i, j, current->robotsCoords);
+                pair<u_int, u_int> newCoordinates = getNewCoords(i, j, current);
+                vector<vector<char>> new_char_map = current->map_char;
                 vector<pair<u_int, u_int>> newRobotCoords = current->robotsCoords;
-                newRobotCoords[i] = newCoordinates;
+                this->replacePosition(i,current->robotsCoords[i],newCoordinates,newRobotCoords,new_char_map);
                 if (detectCollision(current->robotsCoords[i], newCoordinates) ||
                     findNodeOnList(closedSet, newRobotCoords))
                 {
@@ -320,7 +321,7 @@ bool AI::astar()
                 Node *successor = findNodeOnList(openSet, newRobotCoords);
                 if (successor == nullptr)
                 {
-                    successor = new Node(newRobotCoords, current);
+                    successor = new Node(newRobotCoords, new_char_map,current);
                     successor->move = pair<u_int, char>(i, numToPlay(j));
                     successor->G = totalCost;
                     successor->computeHeuristic(this->map->getRobotTargets(this->level));
@@ -353,25 +354,25 @@ bool AI::astar()
     return true;
 }
 
-pair<u_int, u_int> AI::getNewCoords(int robotIndex, int direction, vector<pair<u_int, u_int>> robotsCoords)
+pair<u_int, u_int> AI::getNewCoords(int robotIndex, int direction, Node * node)
 {
     pair<u_int, u_int> newCoords;
     switch (direction)
     {
     case 0:
-        newCoords = this->MoveTop(this->map_char, robotIndex, robotsCoords);
+        newCoords = this->MoveTop(node->map_char, robotIndex, node->robotsCoords);
 
         break;
     case 1:
-        newCoords = this->MoveLeft(map_char, robotIndex, robotsCoords);
+        newCoords = this->MoveLeft(node->map_char, robotIndex, node->robotsCoords);
 
         break;
     case 2:
-        newCoords = this->MoveBottom(map_char, robotIndex, robotsCoords);
+        newCoords = this->MoveBottom(node->map_char, robotIndex, node->robotsCoords);
 
         break;
     case 3:
-        newCoords = this->MoveRight(map_char, robotIndex, robotsCoords);
+        newCoords = this->MoveRight(node->map_char, robotIndex, node->robotsCoords);
 
         break;
     }
