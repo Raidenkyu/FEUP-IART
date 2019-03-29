@@ -90,6 +90,9 @@ bool AI::computeSolution()
     case IDFS:
         solutionFound = this->iterativeDfs();
         break;
+    case GREEDY:
+        solutionFound = this->greedy();
+        break;
     default:
         cout << "Invalid Algorithm" << endl;
         exit(0);
@@ -281,7 +284,7 @@ bool AI::astar()
 {
     Node *current = nullptr;
     set<Node *> openSet, closedSet;
-    openSet.insert(new Node(this->robot_positions,this->map_char));
+    openSet.insert(new Node(this->robot_positions, this->map_char));
 
     while (!openSet.empty())
     {
@@ -309,7 +312,7 @@ bool AI::astar()
                 pair<u_int, u_int> newCoordinates = getNewCoords(i, j, current);
                 vector<vector<char>> new_char_map = current->map_char;
                 vector<pair<u_int, u_int>> newRobotCoords = current->robotsCoords;
-                this->replacePosition(i,current->robotsCoords[i],newCoordinates,newRobotCoords,new_char_map);
+                this->replacePosition(i, current->robotsCoords[i], newCoordinates, newRobotCoords, new_char_map);
                 if (detectCollision(current->robotsCoords[i], newCoordinates) ||
                     findNodeOnList(closedSet, newRobotCoords))
                 {
@@ -321,7 +324,7 @@ bool AI::astar()
                 Node *successor = findNodeOnList(openSet, newRobotCoords);
                 if (successor == nullptr)
                 {
-                    successor = new Node(newRobotCoords, new_char_map,current);
+                    successor = new Node(newRobotCoords, new_char_map, current);
                     successor->move = pair<u_int, char>(i, numToPlay(j));
                     successor->G = totalCost;
                     successor->computeHeuristic(this->map->getRobotTargets(this->level));
@@ -337,7 +340,8 @@ bool AI::astar()
             }
         }
     }
-    if(!this->checkEndGame(current->robotsCoords)){
+    if (!this->checkEndGame(current->robotsCoords))
+    {
         return false;
     }
     while (current != nullptr)
@@ -354,7 +358,76 @@ bool AI::astar()
     return true;
 }
 
-pair<u_int, u_int> AI::getNewCoords(int robotIndex, int direction, Node * node)
+bool AI::greedy()
+{
+    Node *current = nullptr;
+    set<Node *> openSet, closedSet;
+    openSet.insert(new Node(this->robot_positions, this->map_char));
+
+    while (!openSet.empty())
+    {
+        current = *openSet.begin();
+
+        for (auto node : openSet)
+        {
+            if (node->getScore() <= current->getScore())
+            {
+
+                current = node;
+            }
+        }
+        if (this->checkEndGame(current->robotsCoords))
+        {
+            break;
+        }
+        closedSet.insert(current);
+        openSet.erase(std::find(openSet.begin(), openSet.end(), current));
+
+        for (u_int i = 0; i < this->robot_positions.size(); ++i)
+        {
+            for (int j = 0; j < 4; j++)
+            {
+                pair<u_int, u_int> newCoordinates = getNewCoords(i, j, current);
+                vector<vector<char>> new_char_map = current->map_char;
+                vector<pair<u_int, u_int>> newRobotCoords = current->robotsCoords;
+                this->replacePosition(i, current->robotsCoords[i], newCoordinates, newRobotCoords, new_char_map);
+                if (detectCollision(current->robotsCoords[i], newCoordinates) ||
+                    findNodeOnList(closedSet, newRobotCoords))
+                {
+                    continue;
+                }
+
+                Node *successor = findNodeOnList(openSet, newRobotCoords);
+                if (successor == nullptr)
+                {
+                    successor = new Node(newRobotCoords, new_char_map, current);
+                    successor->move = pair<u_int, char>(i, numToPlay(j));
+                    successor->computeHeuristic(this->map->getRobotTargets(this->level));
+
+                    openSet.insert(successor);
+                }
+            }
+        }
+    }
+    if (!this->checkEndGame(current->robotsCoords))
+    {
+        return false;
+    }
+    while (current != nullptr)
+    {
+        if (current->move.second != 'f')
+        {
+            this->best_move.insert(this->best_move.begin(), current->move);
+        }
+        current = current->parent;
+    }
+    releaseNodes(openSet);
+    releaseNodes(closedSet);
+
+    return true;
+}
+
+pair<u_int, u_int> AI::getNewCoords(int robotIndex, int direction, Node *node)
 {
     pair<u_int, u_int> newCoords;
     switch (direction)

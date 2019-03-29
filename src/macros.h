@@ -13,7 +13,7 @@
 typedef unsigned int u_int;
 
 enum ALGORITHM{
-    DFS, BFS, ASTAR, IDFS
+    DFS, BFS, ASTAR, IDFS, GREEDY
 };
 
 #ifdef _WIN32 // To clear the screen depending in the User OS
