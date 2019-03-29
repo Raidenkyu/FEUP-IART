@@ -15,6 +15,21 @@ Player::Player(int level, Map *map)
     }
 }
 
+Player::Player(int level, Map *map, vector<pair<u_int,u_int>> robotCoords)
+{
+    
+    this->level = level;
+    this->map = map;
+    this->robot_positions = robotCoords;
+    this->number_robots = map->getNumberOfRobots(this->level);
+    this->map_char = map->getMap(this->level);
+    
+    for(u_int i = 0; i< this->robot_positions.size();i++)
+    {
+        this->map_char[this->robot_positions[i].second][this->robot_positions[i].first]=this->transformNumberToChar(i);
+    }
+}
+
 pair<u_int, u_int> Player::MoveTop(int robot_number)
 {
     u_int currentX = this->robot_positions[robot_number].first;

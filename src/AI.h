@@ -58,6 +58,7 @@ class AI : public Player
   public:
     AI() {}
     AI(int level, Map *map, int algorithm);
+    AI(int level, std::vector<std::pair<u_int,u_int>> robot_positions, Map * map);
 
     //faz movimento de AI
     bool makeMove();
@@ -83,6 +84,8 @@ class AI : public Player
     char numToPlay(int num);
 
     void setIndexSol(u_int index) { this->index_sol = index; }
+
+    bool get_best_move();
 };
 
 #endif

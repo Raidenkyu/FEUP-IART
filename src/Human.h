@@ -19,6 +19,8 @@ public:
 
     bool makeMove();
 
+    bool getHint();
+
 };
 
 #endif

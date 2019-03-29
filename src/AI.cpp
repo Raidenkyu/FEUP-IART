@@ -11,6 +11,21 @@ AI::AI(int level, Map *map, int algorithm) : Player(level, map),
     this->index_sol = 0;
 }
 
+AI::AI(int level, vector<pair<u_int,u_int>> robot_pos, Map * map) : 
+    Player(level, map,robot_pos)
+{
+    this->expancoes = 0;
+    cout << "Computing a Solution. Wait a few seconds" << endl;
+    this->start = chrono::high_resolution_clock::now();
+    this->robot_positions = robot_pos;
+    this->alg_calculated = this->astar();
+    this->end = chrono::high_resolution_clock::now();
+    chrono::duration<double> elapsed = this->end - this->start;
+    cout << "Solution computed with " << this->expancoes << " nodes searched" << endl;
+    cout << "Solution with " << this->best_move.size() << " movements" << endl;
+    cout << "Solution took " << elapsed.count() << " seconds" << endl;
+}
+
 bool AI::makeMove()
 {
 
@@ -765,4 +780,11 @@ bool AI::alreadyBeenOn(vector<vector<pair<u_int, u_int>>> visited, u_int i, pair
         }
     }
     return false;
+}
+
+bool AI::get_best_move()
+{
+    pair<u_int, char> move = this->best_move[0];
+    cout << "Hint: " << this->transformNumberToChar(move.first) << move.second << endl;
+    return true;
 }

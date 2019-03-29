@@ -25,6 +25,7 @@ public:
     //Constructor
     Player(){}
     Player(int level,Map * map);
+    Player(int level,Map * map,std::vector<std::pair<u_int,u_int>> robotCoords);
 
     //Diz qual a posição que vai ter mas não move
     std::pair<u_int,u_int> MoveTop(int robot_number);
