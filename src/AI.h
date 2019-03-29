@@ -8,17 +8,32 @@
 #include "Node.h"
 #include <set>
 
-typedef struct info{
-  int cost;
-  std::vector<std::pair<u_int, u_int>> pos; 
-  std::vector<std::pair<u_int, char>> moves;
-}Info;
+class Info{
+  public:
+  Info(std::vector<std::pair<u_int,u_int>> robot_positions):robot_positions(robot_positions) {};
+  std::vector<std::pair<u_int,u_int>> robot_positions;
+
+  bool operator< (const Info& inf) const
+    {
+      if(this->robot_positions < inf.robot_positions)
+      return true;
+      else
+      return false;
+    }
+    bool operator== (const Info& inf) const
+    {
+      if(this->robot_positions == inf.robot_positions)
+      return true;
+      else
+      return false;
+    }
+};
 
 class AI : public Player
 {
   private:
     //função dfs recursiva
-    bool dfs(int custo, std::vector<std::vector<char>> map_char, std::vector<std::pair<u_int, u_int>> robot_positions, std::vector<std::pair<std::vector<std::pair<u_int, u_int>>, u_int>> &visited, std::vector<std::pair<u_int, char>> moves);
+    bool dfs(int custo, std::vector<std::vector<char>> map_char, std::vector<std::pair<u_int, u_int>> robot_positions, std::map<Info, u_int> &visited, std::vector<std::pair<u_int, char>> moves);
 
     //funcao bfs
     bool bfs();
@@ -26,8 +41,8 @@ class AI : public Player
     //pega no node final e mete os paizinhos dele todos no best move (incluindo ele), em ordem inversa
     void TranslateToBestMove(Node *node);
     //testa se um posição já foi passada
-    bool alreadyBeenOn(std::vector<std::pair<std::vector<std::pair<u_int, u_int>>, u_int>> visited, u_int max_search, u_int i, std::pair<u_int, u_int> position, std::vector<std::pair<u_int, u_int>> robot_position);
-    bool alreadyBeenOn(std::vector<std::vector<std::pair<u_int, u_int>>> visited, u_int i, std::pair<u_int, u_int> position, std::vector<std::pair<u_int, u_int>> robot_position);
+    bool alreadyBeenOn(std::map<Info, u_int> &visited, u_int max_search, u_int i, std::pair<u_int, u_int> position, std::vector<std::pair<u_int, u_int>> robot_position);
+    
     //melhor movimento
     std::vector<std::pair<u_int, char>> best_move;
     //melhor custo
@@ -50,11 +65,6 @@ class AI : public Player
     std::chrono::high_resolution_clock::time_point start;
     std::chrono::high_resolution_clock::time_point end;
 
-    long int computeHeuristic(std::vector<std::pair<u_int,u_int>> robot_pos ,std::vector<std::pair<u_int,u_int>> targets);
-
-    Info bestOption(std::list<Info> &list);
-    bool rep(std::list<Info> &list,Info testar);
-
   public:
     AI() {}
     AI(int level, Map *map, int algorithm);
@@ -75,7 +85,6 @@ class AI : public Player
     //Profundidade iterativa
     bool iterativeDfs();
 
-    bool astartSecond();
 
     std::pair<u_int, u_int> getNewCoords(int robotIndex, int direction, Node *node);
     Node *findNodeOnList(std::set<Node *> &nodes, std::vector<std::pair<u_int, u_int>> robotsCoords);
