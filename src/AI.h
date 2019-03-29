@@ -8,6 +8,12 @@
 #include "Node.h"
 #include <set>
 
+typedef struct info{
+  int cost;
+  std::vector<std::pair<u_int, u_int>> pos; 
+  std::vector<std::pair<u_int, char>> moves;
+}Info;
+
 class AI : public Player
 {
   private:
@@ -21,7 +27,7 @@ class AI : public Player
     void TranslateToBestMove(Node *node);
     //testa se um posição já foi passada
     bool alreadyBeenOn(std::vector<std::pair<std::vector<std::pair<u_int, u_int>>, u_int>> visited, u_int max_search, u_int i, std::pair<u_int, u_int> position, std::vector<std::pair<u_int, u_int>> robot_position);
-
+    bool alreadyBeenOn(std::vector<std::vector<std::pair<u_int, u_int>>> visited, u_int i, std::pair<u_int, u_int> position, std::vector<std::pair<u_int, u_int>> robot_position);
     //melhor movimento
     std::vector<std::pair<u_int, char>> best_move;
     //melhor custo
@@ -44,6 +50,11 @@ class AI : public Player
     std::chrono::high_resolution_clock::time_point start;
     std::chrono::high_resolution_clock::time_point end;
 
+    long int computeHeuristic(std::vector<std::pair<u_int,u_int>> robot_pos ,std::vector<std::pair<u_int,u_int>> targets);
+
+    Info bestOption(std::list<Info> &list);
+    bool rep(std::list<Info> &list,Info testar);
+
   public:
     AI() {}
     AI(int level, Map *map, int algorithm);
@@ -60,7 +71,10 @@ class AI : public Player
     //Greedy Search
     bool greedy();
 
+    //Profundidade iterativa
     bool iterativeDfs();
+
+    bool astartSecond();
 
     std::pair<u_int, u_int> getNewCoords(int robotIndex, int direction, Node *node);
     Node *findNodeOnList(std::set<Node *> &nodes, std::vector<std::pair<u_int, u_int>> robotsCoords);

@@ -8,12 +8,13 @@
 #include <fstream>
 #include <string>
 #include <chrono>
+#include <list>
 
 
 typedef unsigned int u_int;
 
 enum ALGORITHM{
-    DFS, BFS, ASTAR, IDFS, GREEDY
+    DFS, BFS, ASTAR, IDFS, GREEDY, ASTARSECOND
 };
 
 #ifdef _WIN32 // To clear the screen depending in the User OS

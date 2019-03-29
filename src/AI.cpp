@@ -93,6 +93,9 @@ bool AI::computeSolution()
     case GREEDY:
         solutionFound = this->greedy();
         break;
+    case ASTARSECOND:
+        solutionFound = this->astartSecond();
+        break;
     default:
         cout << "Invalid Algorithm" << endl;
         exit(0);
@@ -101,7 +104,7 @@ bool AI::computeSolution()
     chrono::duration<double> elapsed = this->end - this->start;
     if (solutionFound)
     {
-        cout << "Solution computed with " << this->expancoes << " expantions" << endl;
+        cout << "Solution computed with " << this->expancoes << " nodes searched" << endl;
         cout << "Solution with " << this->best_move.size() << " movements" << endl;
         cout << "Solution took " << elapsed.count() << " seconds" << endl;
 
@@ -289,6 +292,7 @@ bool AI::astar()
     while (!openSet.empty())
     {
         current = *openSet.begin();
+        this->expancoes++;
 
         for (auto node : openSet)
         {
@@ -382,7 +386,6 @@ bool AI::greedy()
         }
         closedSet.insert(current);
         openSet.erase(std::find(openSet.begin(), openSet.end(), current));
-
         for (u_int i = 0; i < this->robot_positions.size(); ++i)
         {
             for (int j = 0; j < 4; j++)
@@ -596,19 +599,170 @@ void AI::TranslateToBestMove(Node *node)
         }
         node = node->parent;
     }
-    /* cout << "Move 0: " << node->move.first << node->move.second << endl;
-int i = 1;
-    while(node->parent != nullptr){
-    cout << node->parent << endl;
-    cout << "Move " << i << ": " << node->move.first << node->move.second << endl;
-    i++;
-    this->best_move.push_back(node->);
-    node = node->parent;
-     */
-    /*   }
-    cin.get();
-    for(unsigned int i = 0; i < this->best_move.size(); i++){
-        cout << this->best_move[i].first << this->best_move[i].second << endl;
+}
+
+bool AI::astartSecond()
+{
+    list<Info> q;
+    q.clear();
+    vector<pair<u_int, char>> moves_tmp;
+    Info novo;
+    novo.cost = 0;
+    novo.pos = this->robot_positions;
+    novo.moves = moves_tmp;
+    q.push_back(novo);
+    vector<vector<pair<u_int, u_int>>> visited;
+
+    while (!q.empty())
+    {
+        Info selected = this->bestOption(q);
+        vector<pair<u_int, u_int>> pos = selected.pos;
+        visited.push_back(pos);
+        vector<pair<u_int, char>> moves = selected.moves;
+        long int custo = moves.size();
+        this->expancoes++;
+        if (this->checkEndGame(pos))
+        {
+
+            this->best_custo = moves.size();
+            this->best_move = moves;
+            return true;
+        }
+        vector<vector<char>> char_map = this->map->getCharMap(this->level, pos);
+        for (u_int i = 0; i < pos.size(); i++)
+        {
+
+            pair<u_int, u_int> current_position = pos[i];
+
+            pair<u_int, u_int> top_move = this->MoveTop(char_map, i, pos);
+            if (top_move != current_position && !this->alreadyBeenOn(visited, i, top_move, pos))
+            {
+                Info novo;
+                novo.pos = pos;
+                novo.moves = moves;
+                novo.pos[i] = top_move;
+                novo.cost = custo + 1 + this->computeHeuristic(novo.pos, this->map->getRobotTargets(this->level));
+                novo.moves.push_back(make_pair(i, 't'));
+                if (!this->rep(q, novo))
+                    q.push_back(novo);
+            }
+            pair<u_int, u_int> bottom_move = this->MoveBottom(char_map, i, pos);
+            if (bottom_move != current_position && !this->alreadyBeenOn(visited, i, bottom_move, pos))
+            {
+                Info novo;
+                novo.pos = pos;
+                novo.moves = moves;
+                novo.pos[i] = bottom_move;
+                novo.cost = custo + 1 + this->computeHeuristic(novo.pos, this->map->getRobotTargets(this->level));
+                novo.moves.push_back(make_pair(i, 'b'));
+                if (!this->rep(q, novo))
+                    q.push_back(novo);
+            }
+            pair<u_int, u_int> left_move = this->MoveLeft(char_map, i, pos);
+            if (left_move != current_position && !this->alreadyBeenOn(visited, i, left_move, pos))
+            {
+                Info novo;
+                novo.pos = pos;
+                novo.moves = moves;
+                novo.pos[i] = left_move;
+                novo.cost = custo + 1 + this->computeHeuristic(novo.pos, this->map->getRobotTargets(this->level));
+                novo.moves.push_back(make_pair(i, 'l'));
+                if (!this->rep(q, novo))
+                    q.push_back(novo);
+            }
+            pair<u_int, u_int> right_move = this->MoveRight(char_map, i, pos);
+            if (right_move != current_position && !this->alreadyBeenOn(visited, i, right_move, pos))
+            {
+                Info novo;
+                novo.pos = pos;
+                novo.moves = moves;
+                novo.pos[i] = right_move;
+                novo.cost = custo + 1 + this->computeHeuristic(novo.pos, this->map->getRobotTargets(this->level));
+                novo.moves.push_back(make_pair(i, 'r'));
+                if (!this->rep(q, novo))
+                    q.push_back(novo);
+            }
+        }
     }
-    cin.get(); */
+    return false;
+}
+
+long int AI::computeHeuristic(vector<pair<u_int, u_int>> robot_pos, vector<pair<u_int, u_int>> targets)
+{
+    long int h = 0;
+    int deltaX, deltaY;
+    for (unsigned int i = 0; i < targets.size(); i++)
+    {
+        deltaX = abs(((int)(robot_pos[i].first)) - ((int)(targets[i].first)));
+        deltaY = abs(((int)(robot_pos[i].second)) - ((int)(targets[i].second)));
+        if (deltaX != 0)
+        {
+            h++;
+        }
+        if (deltaY != 0)
+        {
+            h++;
+        }
+    }
+    return h;
+}
+
+Info AI::bestOption(list<Info> &list)
+{
+    int best = INT_MAX;
+    std::list<Info>::iterator devolver;
+    for (std::list<Info>::iterator it = list.begin(); it != list.end(); ++it)
+    {
+        if (it->cost < best)
+        {
+            best = it->cost;
+            devolver = it;
+        }
+    }
+    Info guardar = *devolver;
+    list.erase(devolver);
+    return guardar;
+}
+
+bool AI::rep(std::list<Info> &list, Info testar)
+{
+    for (std::list<Info>::iterator it = list.begin(); it != list.end(); ++it)
+    {
+        if (it->pos == testar.pos)
+        {
+            if (testar.cost < it->cost)
+            {
+                it->cost = testar.cost;
+                it->pos = testar.pos;
+                it->moves = testar.moves;
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+bool AI::alreadyBeenOn(vector<vector<pair<u_int, u_int>>> visited, u_int i, pair<u_int, u_int> position, vector<pair<u_int, u_int>> robot_positions)
+{
+    bool conta;
+    for (u_int j = 0; j < visited.size(); j++)
+    {
+        if (position.first == visited[j][i].first && position.second == visited[j][i].second)
+        {
+            conta = true;
+            for (u_int k = 0; k < visited[j].size(); k++)
+            {
+                if (i == k)
+                    continue;
+                if (!(robot_positions[k].first == visited[j][k].first && robot_positions[k].second == visited[j][k].second))
+                {
+                    conta = false;
+                    break;
+                }
+            }
+            if (conta)
+                return true;
+        }
+    }
+    return false;
 }

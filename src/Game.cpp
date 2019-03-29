@@ -60,6 +60,7 @@ void Game::menu()
             cout << "2 - A-Star *****" << endl;
             cout << "3 - Iterative Deepening Depth-First Search" << endl;
             cout << "4 - Greedy Algorithm" << endl;
+            cout << "5 - Second A*" << endl;
             cin >> algorithmChoice;
 
             player = new AI(levelChoice - 1, this->map, algorithmChoice);
