@@ -39,9 +39,9 @@ void Game::menu()
         do
         {
         cout << "Choose the game mode:" << endl;
-        cout << "0 - Exit" << endl;
         cout << "1 - Human" << endl;
         cout << "2 - PC" << endl;
+        cout << "0 - Exit" << endl;
         cout << endl << "Game Mode: ";
             cin >> read;
         } while (!is_number(read));
