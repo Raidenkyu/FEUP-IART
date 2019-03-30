@@ -16,7 +16,7 @@
 typedef unsigned int u_int;
 
 enum ALGORITHM{
-    DFS, BFS, ASTAR, IDFS, GREEDY, ASTARSECOND
+    DFS, BFS, ASTAR, IDFS, GREEDY
 };
 
 enum HEURISTIC{

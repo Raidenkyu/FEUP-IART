@@ -309,6 +309,7 @@ bool AI::astar()
         {
             for (int j = 0; j < 4; j++)
             {
+    
                 pair<u_int, u_int> newCoordinates = getNewCoords(i, j, current);
                 vector<vector<char>> new_char_map = current->map_char;
                 vector<pair<u_int, u_int>> newRobotCoords = current->robotsCoords;
@@ -354,7 +355,6 @@ bool AI::astar()
     }
     releaseNodes(openSet);
     releaseNodes(closedSet);
-
     return true;
 }
 

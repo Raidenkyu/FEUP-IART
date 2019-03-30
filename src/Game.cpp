@@ -40,8 +40,9 @@ void Game::menu()
         {
         cout << "Choose the game mode:" << endl;
         cout << "0 - Exit" << endl;
-        cout << "1 - Humans" << endl;
-        cout << "2 - Bots" << endl;
+        cout << "1 - Human" << endl;
+        cout << "2 - PC" << endl;
+        cout << endl << "Game Mode: ";
             cin >> read;
         } while (!is_number(read));
         playerChoice = stoi(read);
@@ -66,10 +67,10 @@ void Game::menu()
             cout << "Choose the algorithm:" << endl;
             cout << "0 - Depth-First Search" << endl;
             cout << "1 - Breadth-First Search" << endl;
-            cout << "2 - A-Star *****" << endl;
+            cout << "2 - A* (A-Star)" << endl;
             cout << "3 - Iterative Deepening Depth-First Search" << endl;
             cout << "4 - Greedy Algorithm" << endl;
-            cout << "5 - Second A*" << endl;
+            cout << "Algorithm: ";
                 cin >> read;
             } while (!is_number(read));
             algorithmChoice = stoi(read);
@@ -77,6 +78,7 @@ void Game::menu()
                 cout << endl;
                 cout << "Choose the heristic" << endl;
                 cout << "0 - Optimistic" << endl;
+                cout << endl << "Heuristic: ";
                 cin >> heuristicChoice;
                 Node::setHeuristic((HEURISTIC)heuristicChoice);
             }
