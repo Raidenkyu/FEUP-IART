@@ -104,6 +104,7 @@ int Game::levelChoose()
     {
         do
         {
+            cout << "There are " << this->map->getMapNumber() << " levels available" << endl;
             cout << "Choose the level (int):";
             cin >> read;
         } while (!is_number(read));
