@@ -417,19 +417,15 @@ pair<u_int, u_int> AI::getNewCoords(vector<vector<char>> map, int robotIndex, in
     {
     case 0:
         newCoords = this->MoveTop(map, robotIndex, robotsCoords);
-
         break;
     case 1:
         newCoords = this->MoveLeft(map, robotIndex, robotsCoords);
-
         break;
     case 2:
         newCoords = this->MoveBottom(map, robotIndex, robotsCoords);
-
         break;
     case 3:
         newCoords = this->MoveRight(map, robotIndex, robotsCoords);
-
         break;
     }
     return newCoords;
@@ -488,7 +484,6 @@ char AI::numToPlay(int num)
 
 bool AI::bfs()
 {
-    char directions[] = {'t', 'l', 'b', 'r'};
     queue<pair<vector<pair<u_int, u_int>>, vector<pair<u_int, char>>>> myqueue;
     vector<pair<u_int, char>> moves;
     std::map<Info, u_int> visited;
@@ -520,19 +515,44 @@ bool AI::bfs()
 
         for (u_int i = 0; i < current_positions.size(); i++)
         {
+
             pair<u_int, u_int> position = current_positions[i];
 
-            for (u_int j = 0; j < 4; j++)
+            pair<u_int, u_int> top_move = this->MoveTop(char_map, i, current_positions);
+            if (top_move != position && !this->alreadyBeenOn(visited, profundidade, i, top_move, current_positions))
             {
-                pair<u_int, u_int> move = this->getNewCoords(map_char, i, j, current_positions);
-                if (move != position && !this->alreadyBeenOn(visited, profundidade, i, move, robot_positions))
-                {
-                    vector<pair<u_int, u_int>> robot_positions_new = current_positions;
-                    vector<pair<u_int, char>> current_moves_new = current_moves;
-                    current_moves_new.push_back(make_pair(i, directions[j]));
-                    robot_positions_new[i] = move;
-                    myqueue.push(make_pair(robot_positions_new, current_moves_new));
-                }
+                vector<pair<u_int, u_int>> robot_positions_new = current_positions;
+                vector<pair<u_int, char>> current_moves_new = current_moves;
+                current_moves_new.push_back(make_pair(i, 't'));
+                robot_positions_new[i] = top_move;
+                myqueue.push(make_pair(robot_positions_new, current_moves_new));
+            }
+            pair<u_int, u_int> bottom_move = this->MoveBottom(char_map, i, current_positions);
+            if (bottom_move != position && !this->alreadyBeenOn(visited, profundidade, i, bottom_move, current_positions))
+            {
+                vector<pair<u_int, u_int>> robot_positions_new = current_positions;
+                vector<pair<u_int, char>> current_moves_new = current_moves;
+                current_moves_new.push_back(make_pair(i, 'b'));
+                robot_positions_new[i] = bottom_move;
+                myqueue.push(make_pair(robot_positions_new, current_moves_new));
+            }
+            pair<u_int, u_int> left_move = this->MoveLeft(char_map, i, current_positions);
+            if (left_move != position && !this->alreadyBeenOn(visited, profundidade, i, left_move, current_positions))
+            {
+                vector<pair<u_int, u_int>> robot_positions_new = current_positions;
+                vector<pair<u_int, char>> current_moves_new = current_moves;
+                current_moves_new.push_back(make_pair(i, 'l'));
+                robot_positions_new[i] = left_move;
+                myqueue.push(make_pair(robot_positions_new, current_moves_new));
+            }
+            pair<u_int, u_int> right_move = this->MoveRight(char_map, i, current_positions);
+            if (right_move != position && !this->alreadyBeenOn(visited, profundidade, i, right_move, current_positions))
+            {
+                vector<pair<u_int, u_int>> robot_positions_new = current_positions;
+                vector<pair<u_int, char>> current_moves_new = current_moves;
+                current_moves_new.push_back(make_pair(i, 'r'));
+                robot_positions_new[i] = right_move;
+                myqueue.push(make_pair(robot_positions_new, current_moves_new));
             }
         }
     }
