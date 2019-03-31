@@ -80,7 +80,7 @@ void Game::menu()
                 cout << "0 - Optimistic" << endl;
                 cout << endl << "Heuristic: ";
                 cin >> heuristicChoice;
-                Node::setHeuristic((HEURISTIC)heuristicChoice);
+                AI::setHeuristic((HEURISTIC)heuristicChoice);
             }
             player = new AI(levelChoice - 1, this->map, algorithmChoice);
             this->loop();

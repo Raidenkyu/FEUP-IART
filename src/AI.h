@@ -62,6 +62,8 @@ private:
 
   long expancoes;
 
+  static HEURISTIC heuristic;
+
   std::chrono::high_resolution_clock::time_point start;
   std::chrono::high_resolution_clock::time_point end;
 
@@ -88,7 +90,7 @@ public:
   bool iterativeDfs();
 
   std::pair<u_int, u_int> getNewCoords(int robotIndex, int direction, Node *node);
-  std::pair<u_int, u_int> getNewCoords(std::vector<std::vector<char>> map, int robotIndex, int direction, std::vector<std::pair<u_int,u_int>> robotsCoords);
+  std::pair<u_int, u_int> getNewCoords(std::vector<std::vector<char>> map, int robotIndex, int direction, std::vector<std::pair<u_int, u_int>> robotsCoords);
   Node *findNodeOnList(std::set<Node *> &nodes, std::vector<std::pair<u_int, u_int>> robotsCoords);
   void releaseNodes(std::set<Node *> &nodes);
   bool detectCollision(std::pair<u_int, u_int> oldCoords, std::pair<u_int, u_int> newCoords);
@@ -97,6 +99,11 @@ public:
   void setIndexSol(u_int index) { this->index_sol = index; }
 
   bool get_best_move();
+
+  u_int computeHeuristic(Node * node);
+  u_int optimistic(Node * node);
+
+  static void setHeuristic(HEURISTIC h);
 };
 
 #endif

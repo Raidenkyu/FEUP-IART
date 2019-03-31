@@ -14,10 +14,6 @@ class Node
     Node(std::vector<std::pair<u_int,u_int>> robotsCoords, std::vector<std::vector<char>> map_char, Node *parent_ = nullptr);
   
     u_int getScore();
-    u_int computeHeuristic(std::vector<std::pair<u_int,u_int>> targets);
-    u_int optimistic(std::vector<std::pair<u_int,u_int>> targets);
-    static HEURISTIC heuristic;
-    static void setHeuristic(HEURISTIC h);
 };
 
 #endif

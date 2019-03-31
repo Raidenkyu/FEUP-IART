@@ -4,6 +4,8 @@
 
 using namespace std;
 
+HEURISTIC AI::heuristic = OPTIMISTIC;
+
 AI::AI(int level, Map *map, int algorithm) : Player(level, map),
                                              algorithm(algorithm)
 {
@@ -293,7 +295,7 @@ bool AI::astar()
                     successor = new Node(newRobotCoords, new_char_map, current);
                     successor->move = pair<u_int, char>(i, numToPlay(j));
                     successor->G = totalCost;
-                    successor->computeHeuristic(this->map->getRobotTargets(this->level));
+                    successor->H = computeHeuristic(successor);
 
                     openSet.insert(successor);
                 }
@@ -366,7 +368,7 @@ bool AI::greedy()
                 {
                     successor = new Node(newRobotCoords, new_char_map, current);
                     successor->move = pair<u_int, char>(i, numToPlay(j));
-                    successor->computeHeuristic(this->map->getRobotTargets(this->level));
+                    successor->H = computeHeuristic(successor);
 
                     openSet.insert(successor);
                 }
@@ -585,4 +587,41 @@ bool AI::get_best_move()
     pair<u_int, char> move = this->best_move[0];
     cout << "Hint: " << this->transformNumberToChar(move.first) << move.second << endl;
     return true;
+}
+
+u_int AI::computeHeuristic(Node * node)
+{
+    switch (heuristic)
+    {
+    case OPTIMISTIC:
+        return optimistic(node);
+    default:
+        return optimistic(node);
+    }
+}
+
+void AI::setHeuristic(HEURISTIC h)
+{
+    heuristic = h;
+}
+
+u_int AI::optimistic(Node * node)
+{
+    vector<pair<u_int,u_int>> targets = this->map->getRobotTargets(this->level);
+    u_int h = 0;
+    int deltaX, deltaY;
+    for (unsigned int i = 0; i < targets.size(); i++)
+    {
+        deltaX = abs(((int)(node->robotsCoords[i].first)) - ((int)(targets[i].first)));
+        deltaY = abs(((int)(node->robotsCoords[i].second)) - ((int)(targets[i].second)));
+        if (deltaX != 0)
+        {
+            h++;
+        }
+        if (deltaY != 0)
+        {
+            h++;
+        }
+    }
+    return h;
 }

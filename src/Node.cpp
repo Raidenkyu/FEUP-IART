@@ -2,8 +2,6 @@
 
 using namespace std;
 
-HEURISTIC Node::heuristic = OPTIMISTIC;
-
 Node::Node(vector<pair<u_int, u_int>> robotsCoords, vector<vector<char>> map_char, Node *parent) : G(0),
                                                                                                    H(0),
                                                                                                    robotsCoords(robotsCoords),
@@ -18,39 +16,3 @@ u_int Node::getScore()
     return (G + H);
 }
 
-u_int Node::computeHeuristic(vector<pair<u_int, u_int>> targets)
-{
-    switch (heuristic)
-    {
-    case OPTIMISTIC:
-        return optimistic(targets);
-    default:
-        return optimistic(targets);
-    }
-}
-
-void Node::setHeuristic(HEURISTIC h)
-{
-    heuristic = h;
-}
-
-u_int Node::optimistic(vector<pair<u_int, u_int>> targets)
-{
-    u_int h = 0;
-    int deltaX, deltaY;
-    for (unsigned int i = 0; i < targets.size(); i++)
-    {
-        deltaX = abs(((int)(robotsCoords[i].first)) - ((int)(targets[i].first)));
-        deltaY = abs(((int)(robotsCoords[i].second)) - ((int)(targets[i].second)));
-        if (deltaX != 0)
-        {
-            h++;
-        }
-        if (deltaY != 0)
-        {
-            h++;
-        }
-    }
-    this->H = h;
-    return h;
-}
