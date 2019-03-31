@@ -65,11 +65,7 @@ private:
   std::chrono::high_resolution_clock::time_point start;
   std::chrono::high_resolution_clock::time_point end;
 
-  bool is_number(const std::string &s)
-  {
-    return !s.empty() && std::find_if(s.begin(),
-                                      s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
-  }
+  bool is_number(const std::string &s);
 
 public:
   AI() {}
