@@ -59,7 +59,6 @@ private:
   bool alg_calculated;
   u_int index_sol;
   u_int limite;
-  bool evitar_ciclos = true;
 
   long expancoes;
 

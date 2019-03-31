@@ -163,13 +163,6 @@ bool AI::dfs()
         cin >> ler;
     } while (!is_number(ler));
     this->limite = stoi(ler);
-    char lido;
-    cout << "Want to avoid repetions?(Y/N) ";
-    cin >> lido;
-    if (lido == 'Y' || lido == 'y')
-        this->evitar_ciclos = true;
-    else
-        this->evitar_ciclos = false;
     cout << "Searching ..." << endl;
     this->expancoes = 0;
     this->start = chrono::high_resolution_clock::now();
@@ -219,7 +212,6 @@ bool AI::iterativeDfs()
     vector<pair<u_int, char>> moves;
     this->best_move.clear();
     this->best_custo = INT_MAX;
-    this->evitar_ciclos = true;
     this->limite = 1;
     u_int max_limite;
     string ler;
