@@ -334,7 +334,7 @@ bool AI::greedy()
     while (!openSet.empty())
     {
         current = *openSet.begin();
-
+        this->expancoes++;
         for (auto node : openSet)
         {
             if (node->getScore() <= current->getScore())
