@@ -256,7 +256,6 @@ bool AI::astar()
     {
         current = *openSet.begin();
         this->expancoes++;
-
         for (auto node : openSet)
         {
             if (node->getScore() <= current->getScore())
@@ -270,7 +269,7 @@ bool AI::astar()
             break;
         }
         closedSet.insert(current);
-        openSet.erase(std::find(openSet.begin(), openSet.end(), current));
+        openSet.erase(current);
 
         for (u_int i = 0; i < this->robot_positions.size(); ++i)
         {
