@@ -11,6 +11,7 @@
 #include <map>
 #include <algorithm>
 #include <cctype>
+#include <unordered_set>
 
 
 typedef unsigned int u_int;

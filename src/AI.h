@@ -89,7 +89,7 @@ public:
   //Profundidade iterativa
   bool iterativeDfs();
 
-  std::pair<u_int, u_int> getNewCoords(int robotIndex, int direction, Node *node);
+  std::pair<u_int, u_int> getNewCoords(int robotIndex, int direction, Node node);
   std::pair<u_int, u_int> getNewCoords(std::vector<std::vector<char>> map, int robotIndex, int direction, std::vector<std::pair<u_int, u_int>> robotsCoords);
   Node *findNodeOnList(std::set<Node *> &nodes, std::vector<std::pair<u_int, u_int>> robotsCoords);
   void releaseNodes(std::set<Node *> &nodes);
@@ -100,9 +100,9 @@ public:
 
   bool get_best_move();
 
-  u_int computeHeuristic(Node * node);
-  u_int optimistic(Node * node);
-  u_int realistic(Node * node);
+  u_int computeHeuristic(Node node);
+  u_int optimistic(Node node);
+  u_int realistic(Node node);
 
   static void setHeuristic(HEURISTIC h);
 };
