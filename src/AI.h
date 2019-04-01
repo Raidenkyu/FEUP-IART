@@ -102,6 +102,7 @@ public:
 
   u_int computeHeuristic(Node * node);
   u_int optimistic(Node * node);
+  u_int realistic(Node * node);
 
   static void setHeuristic(HEURISTIC h);
 };

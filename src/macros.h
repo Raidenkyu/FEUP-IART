@@ -20,7 +20,7 @@ enum ALGORITHM{
 };
 
 enum HEURISTIC{
-    OPTIMISTIC
+    OPTIMISTIC, REALISTIC
 };
 
 #ifdef _WIN32 // To clear the screen depending in the User OS

@@ -589,12 +589,14 @@ bool AI::get_best_move()
     return true;
 }
 
-u_int AI::computeHeuristic(Node * node)
+u_int AI::computeHeuristic(Node *node)
 {
     switch (heuristic)
     {
     case OPTIMISTIC:
         return optimistic(node);
+    case REALISTIC:
+        return realistic(node);
     default:
         return optimistic(node);
     }
@@ -605,9 +607,9 @@ void AI::setHeuristic(HEURISTIC h)
     heuristic = h;
 }
 
-u_int AI::optimistic(Node * node)
+u_int AI::optimistic(Node *node)
 {
-    vector<pair<u_int,u_int>> targets = this->map->getRobotTargets(this->level);
+    vector<pair<u_int, u_int>> targets = this->map->getRobotTargets(this->level);
     u_int h = 0;
     int deltaX, deltaY;
     for (unsigned int i = 0; i < targets.size(); i++)
@@ -622,6 +624,85 @@ u_int AI::optimistic(Node * node)
         {
             h++;
         }
+    }
+    return h;
+}
+
+u_int AI::realistic(Node *node)
+{
+    bool sameColumn = true;
+    bool sameLine = true;
+    int start, end, index;
+    vector<pair<u_int, u_int>> targets = this->map->getRobotTargets(this->level);
+    u_int h = 0;
+    int deltaX, deltaY;
+    for (unsigned int i = 0; i < targets.size(); i++)
+    {
+        deltaX = abs(((int)(node->robotsCoords[i].first)) - ((int)(targets[i].first)));
+        deltaY = abs(((int)(node->robotsCoords[i].second)) - ((int)(targets[i].second)));
+        if (deltaX != 0)
+        {
+            sameColumn = false;
+            h++;
+        }
+        if (deltaY != 0)
+        {
+            sameLine = false;
+            h++;
+        }
+
+        if (sameColumn && !sameLine)
+        {
+
+            index = node->robotsCoords[i].first;
+            if (node->robotsCoords[i].second < targets[i].second)
+            {
+                start = node->robotsCoords[i].second;
+                end = targets[i].second;
+            }
+            else
+            {
+                end = node->robotsCoords[i].second;
+                start = targets[i].second;
+            }
+            while (start < end)
+            {
+                if (this->map->getMap(this->level)[start][index] == 'X')
+                {
+                    h++;
+                    break;
+                }
+                start++;
+            }
+        }
+
+        else if (sameLine && !sameColumn)
+        {
+            index = node->robotsCoords[i].second;
+
+            if (node->robotsCoords[i].first < targets[i].first)
+            {
+                start = node->robotsCoords[i].first;
+                end = targets[i].first;
+            }
+            else
+            {
+                end = node->robotsCoords[i].first;
+                start = targets[i].first;
+            }
+            while (start < end)
+            {
+                if (this->map->getMap(this->level)[index][start] == 'X')
+                {
+                    h++;
+                    break;
+                }
+                start++;
+            }
+        }
+
+        sameColumn = true;
+        sameLine = true;
     }
     return h;
 }
