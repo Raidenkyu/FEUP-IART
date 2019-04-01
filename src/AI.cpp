@@ -647,7 +647,7 @@ u_int AI::realistic(Node *node)
         if (deltaY != 0)
         {
             sameLine = false;
-            h++;
+            h+=2;
         }
 
         if (sameColumn && !sameLine)
@@ -668,7 +668,7 @@ u_int AI::realistic(Node *node)
             {
                 if (this->map->getMap(this->level)[start][index] == 'X')
                 {
-                    h++;
+                    h+=2;
                     break;
                 }
                 start++;
