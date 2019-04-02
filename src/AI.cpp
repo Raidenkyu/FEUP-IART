@@ -248,26 +248,32 @@ bool AI::iterativeDfs()
 
 bool AI::astar()
 {
-    Node *current = nullptr;
-    set<Node *> openSet, closedSet;
-    openSet.insert(new Node(this->robot_positions, this->map_char));
+    this->best_custo=INT_MAX;
+    this->best_move.clear();
+    set<Node> openSet, closedSet;
+    vector<pair<u_int, char>> moves;
+    Node inicial(this->robot_positions, this->map_char,moves);
+    priority_queue<pair<u_int,Node>> queue;
+    openSet.insert(inicial);
+    queue.push(make_pair(0,inicial));
 
-    while (!openSet.empty())
+    while (!openSet.empty() && !queue.empty())
     {
-        current = *openSet.begin();
+        Node current=queue.top().second;
+        queue.pop();
         this->expancoes++;
-        for (auto node : openSet)
+        //cout << this->expancoes << " " << current.moves.size() << " " << queue.size() << " " << current.G <<  endl;
+        if (this->checkEndGame(current.robotsCoords) && (int)current.moves.size()<this->best_custo)
         {
-            if (node->getScore() <= current->getScore())
-            {
-
-                current = node;
-            }
+            this->best_move=current.moves;
+            this->best_custo=current.moves.size();
+            break; //Change this to continue to only get one solution that may be no optimal
         }
-        if (this->checkEndGame(current->robotsCoords))
+        if((int)current.G>this->best_custo)
         {
             break;
         }
+        //log n ^ 2
         closedSet.insert(current);
         openSet.erase(current);
 
@@ -275,53 +281,39 @@ bool AI::astar()
         {
             for (int j = 0; j < 4; j++)
             {
-
+                //Constante
                 pair<u_int, u_int> newCoordinates = getNewCoords(i, j, current);
-                vector<vector<char>> new_char_map = current->map_char;
-                vector<pair<u_int, u_int>> newRobotCoords = current->robotsCoords;
-                this->replacePosition(i, current->robotsCoords[i], newCoordinates, newRobotCoords, new_char_map);
-                if (detectCollision(current->robotsCoords[i], newCoordinates) ||
-                    findNodeOnList(closedSet, newRobotCoords))
+                vector<vector<char>> new_char_map = current.map_char;
+                vector<pair<u_int, u_int>> newRobotCoords = current.robotsCoords;
+                this->replacePosition(i, current.robotsCoords[i], newCoordinates, newRobotCoords, new_char_map);
+                Node pesquisa(newRobotCoords,new_char_map,current.moves);
+                //log n
+                if (detectCollision(current.robotsCoords[i], newCoordinates) || closedSet.find(pesquisa)!=closedSet.end())
                 {
                     continue;
                 }
 
-                u_int totalCost = current->G + 1;
-
-                Node *successor = findNodeOnList(openSet, newRobotCoords);
-                if (successor == nullptr)
+                u_int novo_g = current.G + 1;
+                u_int novo_h = computeHeuristic(pesquisa);
+                u_int totalCost = novo_g+novo_h;
+                //log n
+                set<Node>::iterator successor = openSet.find(pesquisa);
+                if (successor == openSet.end() || totalCost < successor->getScore()) // Se não existir ou se o score for menor que o já existe
                 {
-                    successor = new Node(newRobotCoords, new_char_map, current);
-                    successor->move = pair<u_int, char>(i, numToPlay(j));
-                    successor->G = totalCost;
-                    successor->H = computeHeuristic(successor);
-
-                    openSet.insert(successor);
-                }
-                else if (totalCost < successor->G)
-                {
-                    successor->parent = current;
-                    successor->G = totalCost;
-                    successor->move = pair<u_int, char>(i, numToPlay(j));
+                    pesquisa.moves.push_back(pair<u_int, char>(i, numToPlay(j)));
+                    pesquisa.G = novo_g;
+                    pesquisa.H = novo_h;
+                    // log n ^ 2
+                    queue.push(make_pair(-totalCost,pesquisa));
+                    openSet.insert(pesquisa);
                 }
             }
         }
     }
-    if (!this->checkEndGame(current->robotsCoords))
-    {
+    if(this->best_move.size()!=0)
+        return true;
+    else
         return false;
-    }
-    while (current != nullptr)
-    {
-        if (current->move.second != 'f')
-        {
-            this->best_move.insert(this->best_move.begin(), current->move);
-        }
-        current = current->parent;
-    }
-    releaseNodes(openSet);
-    releaseNodes(closedSet);
-    return true;
 }
 
 bool AI::greedy()
@@ -411,6 +403,30 @@ pair<u_int, u_int> AI::getNewCoords(int robotIndex, int direction, Node *node)
         break;
     case 3:
         newCoords = this->MoveRight(node->map_char, robotIndex, node->robotsCoords);
+
+        break;
+    }
+    return newCoords;
+}
+pair<u_int, u_int> AI::getNewCoords(int robotIndex, int direction, Node node)
+{
+    pair<u_int, u_int> newCoords;
+    switch (direction)
+    {
+    case 0:
+        newCoords = this->MoveTop(node.map_char, robotIndex, node.robotsCoords);
+
+        break;
+    case 1:
+        newCoords = this->MoveLeft(node.map_char, robotIndex, node.robotsCoords);
+
+        break;
+    case 2:
+        newCoords = this->MoveBottom(node.map_char, robotIndex, node.robotsCoords);
+
+        break;
+    case 3:
+        newCoords = this->MoveRight(node.map_char, robotIndex, node.robotsCoords);
 
         break;
     }
@@ -687,6 +703,119 @@ u_int AI::realistic(Node *node)
             else
             {
                 end = node->robotsCoords[i].first;
+                start = targets[i].first;
+            }
+            while (start < end)
+            {
+                if (this->map->getMap(this->level)[index][start] == 'X')
+                {
+                    h++;
+                    break;
+                }
+                start++;
+            }
+        }
+
+        sameColumn = true;
+        sameLine = true;
+    }
+    return h;
+}
+
+u_int AI::computeHeuristic(Node node)
+{
+    switch (heuristic)
+    {
+    case OPTIMISTIC:
+        return optimistic(node);
+    case REALISTIC:
+        return realistic(node);
+    default:
+        return optimistic(node);
+    }
+}
+
+u_int AI::optimistic(Node node)
+{
+    vector<pair<u_int, u_int>> targets = this->map->getRobotTargets(this->level);
+    u_int h = 0;
+    int deltaX, deltaY;
+    for (unsigned int i = 0; i < targets.size(); i++)
+    {
+        deltaX = abs(((int)(node.robotsCoords[i].first)) - ((int)(targets[i].first)));
+        deltaY = abs(((int)(node.robotsCoords[i].second)) - ((int)(targets[i].second)));
+        if (deltaX != 0)
+        {
+            h++;
+        }
+        if (deltaY != 0)
+        {
+            h++;
+        }
+    }
+    return h;
+}
+
+u_int AI::realistic(Node node)
+{
+    bool sameColumn = true;
+    bool sameLine = true;
+    int start, end, index;
+    vector<pair<u_int, u_int>> targets = this->map->getRobotTargets(this->level);
+    u_int h = 0;
+    int deltaX, deltaY;
+    for (unsigned int i = 0; i < targets.size(); i++)
+    {
+        deltaX = abs(((int)(node.robotsCoords[i].first)) - ((int)(targets[i].first)));
+        deltaY = abs(((int)(node.robotsCoords[i].second)) - ((int)(targets[i].second)));
+        if (deltaX != 0)
+        {
+            sameColumn = false;
+            h++;
+        }
+        if (deltaY != 0)
+        {
+            sameLine = false;
+            h+=2;
+        }
+
+        if (sameColumn && !sameLine)
+        {
+
+            index = node.robotsCoords[i].first;
+            if (node.robotsCoords[i].second < targets[i].second)
+            {
+                start = node.robotsCoords[i].second;
+                end = targets[i].second;
+            }
+            else
+            {
+                end = node.robotsCoords[i].second;
+                start = targets[i].second;
+            }
+            while (start < end)
+            {
+                if (this->map->getMap(this->level)[start][index] == 'X')
+                {
+                    h+=2;
+                    break;
+                }
+                start++;
+            }
+        }
+
+        else if (sameLine && !sameColumn)
+        {
+            index = node.robotsCoords[i].second;
+
+            if (node.robotsCoords[i].first < targets[i].first)
+            {
+                start = node.robotsCoords[i].first;
+                end = targets[i].first;
+            }
+            else
+            {
+                end = node.robotsCoords[i].first;
                 start = targets[i].first;
             }
             while (start < end)
