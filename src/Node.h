@@ -26,15 +26,6 @@ public:
       return false;
     }
   }
-
-  struct NodeComp
-{
-  bool operator()(const Node* lhs, const Node* rhs) const  {
-      return (lhs->robotsCoords < rhs->robotsCoords);
-      }
 };
-};
-
-
 
 #endif

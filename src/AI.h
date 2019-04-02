@@ -90,8 +90,8 @@ public:
   std::pair<u_int, u_int> getNewCoords(int robotIndex, int direction, Node *node);
   std::pair<u_int, u_int> getNewCoords(int robotIndex, int direction, Node node);
   std::pair<u_int, u_int> getNewCoords(std::vector<std::vector<char>> map, int robotIndex, int direction, std::vector<std::pair<u_int, u_int>> robotsCoords);
-  Node *findNodeOnList(std::set<Node *,Node::NodeComp> &nodes, std::vector<std::pair<u_int, u_int>> robotsCoords);
-  void releaseNodes(std::set<Node *,Node::NodeComp> &nodes);
+  Node *findNodeOnList(std::set<Node *> &nodes, std::vector<std::pair<u_int, u_int>> robotsCoords);
+  void releaseNodes(std::set<Node *> &nodes);
   bool detectCollision(std::pair<u_int, u_int> oldCoords, std::pair<u_int, u_int> newCoords);
   char numToPlay(int num);
 
