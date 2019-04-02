@@ -248,6 +248,9 @@ bool AI::iterativeDfs()
 
 bool AI::astar()
 {
+
+    this->best_move.clear();
+    this->best_custo = INT_MAX;
     Node *current = nullptr;
     set<Node *> openSet, closedSet;
     openSet.insert(new Node(this->robot_positions, this->map_char));
@@ -264,11 +267,18 @@ bool AI::astar()
                 current = node;
             }
         }
-        cout << current->getScore() << endl;
-        if (this->checkEndGame(current->robotsCoords))
+
+        if (this->checkEndGame(current->robotsCoords) && (int)current->moves.size() < this->best_custo)
+        {
+            this->best_move = current->moves;
+            this->best_custo = current->moves.size();
+            continue; //Change this to continue to only get one solution that may be no optimal
+        }
+        if ((int)current->G > this->best_custo)
         {
             break;
         }
+
         closedSet.insert(current);
         openSet.erase(current);
 
@@ -292,8 +302,8 @@ bool AI::astar()
                 Node *successor = findNodeOnList(openSet, newRobotCoords);
                 if (successor == nullptr)
                 {
-                    successor = new Node(newRobotCoords, new_char_map, current);
-                    successor->move = pair<u_int, char>(i, numToPlay(j));
+                    successor = new Node(newRobotCoords, new_char_map, current->moves);
+                    successor->moves.push_back(pair<u_int, char>(i, numToPlay(j)));
                     successor->G = totalCost;
                     successor->H = computeHeuristic(successor);
 
@@ -301,25 +311,18 @@ bool AI::astar()
                 }
                 else if (totalCost < successor->G)
                 {
-                    successor->parent = current;
                     successor->G = totalCost;
-                    successor->move = pair<u_int, char>(i, numToPlay(j));
+                    successor->moves = current->moves;
+                    successor->moves.push_back(pair<u_int, char>(i, numToPlay(j)));
                 }
             }
         }
     }
-    if (!this->checkEndGame(current->robotsCoords))
+    if (this->best_move.empty())
     {
         return false;
     }
-    while (current != nullptr)
-    {
-        if (current->move.second != 'f')
-        {
-            this->best_move.insert(this->best_move.begin(), current->move);
-        }
-        current = current->parent;
-    }
+
     releaseNodes(openSet);
     releaseNodes(closedSet);
     return true;
@@ -343,7 +346,6 @@ bool AI::greedy()
                 current = node;
             }
         }
-        cout << current->getScore() << endl;
         if (this->checkEndGame(current->robotsCoords))
         {
             break;
@@ -367,8 +369,8 @@ bool AI::greedy()
                 Node *successor = findNodeOnList(openSet, newRobotCoords);
                 if (successor == nullptr)
                 {
-                    successor = new Node(newRobotCoords, new_char_map, current);
-                    successor->move = pair<u_int, char>(i, numToPlay(j));
+                    successor = new Node(newRobotCoords, new_char_map, current->moves);
+                    successor->moves.push_back(pair<u_int, char>(i, numToPlay(j)));
                     successor->H = computeHeuristic(successor);
 
                     openSet.insert(successor);
@@ -379,14 +381,6 @@ bool AI::greedy()
     if (!this->checkEndGame(current->robotsCoords))
     {
         return false;
-    }
-    while (current != nullptr)
-    {
-        if (current->move.second != 'f')
-        {
-            this->best_move.insert(this->best_move.begin(), current->move);
-        }
-        current = current->parent;
     }
     releaseNodes(openSet);
     releaseNodes(closedSet);
@@ -413,6 +407,30 @@ pair<u_int, u_int> AI::getNewCoords(int robotIndex, int direction, Node *node)
         break;
     case 3:
         newCoords = this->MoveRight(node->map_char, robotIndex, node->robotsCoords);
+
+        break;
+    }
+    return newCoords;
+}
+pair<u_int, u_int> AI::getNewCoords(int robotIndex, int direction, Node node)
+{
+    pair<u_int, u_int> newCoords;
+    switch (direction)
+    {
+    case 0:
+        newCoords = this->MoveTop(node.map_char, robotIndex, node.robotsCoords);
+
+        break;
+    case 1:
+        newCoords = this->MoveLeft(node.map_char, robotIndex, node.robotsCoords);
+
+        break;
+    case 2:
+        newCoords = this->MoveBottom(node.map_char, robotIndex, node.robotsCoords);
+
+        break;
+    case 3:
+        newCoords = this->MoveRight(node.map_char, robotIndex, node.robotsCoords);
 
         break;
     }
@@ -568,21 +586,6 @@ bool AI::bfs()
     return true;
 }
 
-void AI::TranslateToBestMove(Node *node)
-{
-
-    this->best_move.clear();
-
-    while (node != nullptr)
-    {
-        if (node->move.second != 'f')
-        {
-            this->best_move.insert(this->best_move.begin(), node->move);
-        }
-        node = node->parent;
-    }
-}
-
 bool AI::get_best_move()
 {
     pair<u_int, char> move = this->best_move[0];
@@ -598,6 +601,8 @@ u_int AI::computeHeuristic(Node *node)
         return optimistic(node);
     case REALISTIC:
         return realistic(node);
+    case SMARTER:
+        return smarter(node);
     default:
         return optimistic(node);
     }
@@ -631,6 +636,8 @@ u_int AI::optimistic(Node *node)
 
 u_int AI::realistic(Node *node)
 {
+
+    vector<vector<char>> map = node->map_char;
     bool sameColumn = true;
     bool sameLine = true;
     int start, end, index;
@@ -649,7 +656,7 @@ u_int AI::realistic(Node *node)
         if (deltaY != 0)
         {
             sameLine = false;
-            h+=2;
+            h++;
         }
 
         if (sameColumn && !sameLine)
@@ -668,9 +675,9 @@ u_int AI::realistic(Node *node)
             }
             while (start < end)
             {
-                if (this->map->getMap(this->level)[start][index] == 'X')
+                if (map[start][index] != '.')
                 {
-                    h+=2;
+                    h += 2;
                     break;
                 }
                 start++;
@@ -693,9 +700,105 @@ u_int AI::realistic(Node *node)
             }
             while (start < end)
             {
-                if (this->map->getMap(this->level)[index][start] == 'X')
+                if (map[index][start] != '.')
                 {
-                    h++;
+                    h += 2;
+                    break;
+                }
+                start++;
+            }
+        }
+
+        sameColumn = true;
+        sameLine = true;
+    }
+    return h;
+}
+
+u_int AI::smarter(Node *node)
+{
+    vector<vector<char>> map = node->map_char;
+    bool sameColumn = true;
+    bool sameLine = true;
+    int start, end, index;
+    vector<pair<u_int, u_int>> targets = this->map->getRobotTargets(this->level);
+    u_int h = 0;
+    int deltaX, deltaY;
+    for (unsigned int i = 0; i < targets.size(); i++)
+    {
+        deltaX = abs(((int)(node->robotsCoords[i].first)) - ((int)(targets[i].first)));
+        deltaY = abs(((int)(node->robotsCoords[i].second)) - ((int)(targets[i].second)));
+        if (deltaX != 0)
+        {
+            sameColumn = false;
+            h++;
+        }
+        if (deltaY != 0)
+        {
+            sameLine = false;
+            h++;
+        }
+
+        if (sameColumn && !sameLine)
+        {
+
+            index = node->robotsCoords[i].first;
+            if (node->robotsCoords[i].second < targets[i].second)
+            {
+                start = node->robotsCoords[i].second;
+                end = targets[i].second;
+                if (map[end + 1][index] == '.')
+                {
+                    h += 2;
+                }
+            }
+            else
+            {
+                end = node->robotsCoords[i].second;
+                start = targets[i].second;
+                if (map[start - 1][index] == '.')
+                {
+                    h += 2;
+                }
+            }
+            while (start < end)
+            {
+                if (map[start][index] != '.')
+                {
+                    h += 2;
+                    break;
+                }
+                start++;
+            }
+        }
+
+        else if (sameLine && !sameColumn)
+        {
+            index = node->robotsCoords[i].second;
+
+            if (node->robotsCoords[i].first < targets[i].first)
+            {
+                start = node->robotsCoords[i].first;
+                end = targets[i].first;
+                if (map[index][end + 1] == '.')
+                {
+                    h += 2;
+                }
+            }
+            else
+            {
+                end = node->robotsCoords[i].first;
+                start = targets[i].first;
+                if (map[index][start - 1] == '.')
+                {
+                    h += 2;
+                }
+            }
+            while (start < end)
+            {
+                if (map[index][start] != '.')
+                {
+                    h += 2;
                     break;
                 }
                 start++;
