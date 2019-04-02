@@ -252,7 +252,7 @@ bool AI::astar()
     this->best_move.clear();
     this->best_custo = INT_MAX;
     Node *current = nullptr;
-    set<Node *> openSet, closedSet;
+    set<Node *,Node::NodeComp> openSet, closedSet;
     openSet.insert(new Node(this->robot_positions, this->map_char));
 
     while (!openSet.empty())
@@ -294,6 +294,7 @@ bool AI::astar()
                 if (detectCollision(current->robotsCoords[i], newCoordinates) ||
                     findNodeOnList(closedSet, newRobotCoords))
                 {
+
                     continue;
                 }
 
@@ -302,6 +303,7 @@ bool AI::astar()
                 Node *successor = findNodeOnList(openSet, newRobotCoords);
                 if (successor == nullptr)
                 {
+
                     successor = new Node(newRobotCoords, new_char_map, current->moves);
                     successor->moves.push_back(pair<u_int, char>(i, numToPlay(j)));
                     successor->G = totalCost;
@@ -331,7 +333,7 @@ bool AI::astar()
 bool AI::greedy()
 {
     Node *current = nullptr;
-    set<Node *> openSet, closedSet;
+    set<Node *,Node::NodeComp> openSet, closedSet;
     openSet.insert(new Node(this->robot_positions, this->map_char));
 
     while (!openSet.empty())
@@ -458,19 +460,17 @@ pair<u_int, u_int> AI::getNewCoords(vector<vector<char>> map, int robotIndex, in
     return newCoords;
 }
 
-Node *AI::findNodeOnList(set<Node *> &nodes, vector<pair<u_int, u_int>> robotsCoords)
+Node *AI::findNodeOnList(set<Node *,Node::NodeComp> &nodes, vector<pair<u_int, u_int>> robotsCoords)
 {
-    for (auto node : nodes)
-    {
-        if (node->robotsCoords == robotsCoords)
-        {
-            return node;
-        }
+    Node * ptr = new Node(robotsCoords,vector<vector<char>>());
+    set<Node *,Node::NodeComp>::iterator it = nodes.find(ptr);
+    if(it != nodes.end()){
+        return *it; 
     }
     return nullptr;
 }
 
-void AI::releaseNodes(set<Node *> &nodes)
+void AI::releaseNodes(set<Node *,Node::NodeComp> &nodes)
 {
     for (auto it = nodes.begin(); it != nodes.end();)
     {
