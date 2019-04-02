@@ -264,6 +264,7 @@ bool AI::astar()
                 current = node;
             }
         }
+        cout << current->getScore() << endl;
         if (this->checkEndGame(current->robotsCoords))
         {
             break;
@@ -342,6 +343,7 @@ bool AI::greedy()
                 current = node;
             }
         }
+        cout << current->getScore() << endl;
         if (this->checkEndGame(current->robotsCoords))
         {
             break;
