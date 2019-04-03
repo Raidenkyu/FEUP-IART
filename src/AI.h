@@ -39,6 +39,8 @@ private:
   //funcao bfs
   bool bfs();
 
+  //pega no node final e mete os paizinhos dele todos no best move (incluindo ele), em ordem inversa
+  void TranslateToBestMove(Node *node);
   //testa se um posição já foi passada
   bool alreadyBeenOn(std::map<Info, u_int> &visited, u_int max_search, u_int i, std::pair<u_int, u_int> position, std::vector<std::pair<u_int, u_int>> robot_position);
 
@@ -100,13 +102,13 @@ public:
   bool get_best_move();
 
   u_int computeHeuristic(Node * node);
-  u_int optimistic(Node *node);
-  u_int realistic(Node *node);
-  u_int smarter(Node *node);
+  u_int optimistic(Node * node);
+  u_int realistic(Node * node);
+  u_int computeHeuristic(Node node);
+  u_int optimistic(Node node);
+  u_int realistic(Node node);
 
   static void setHeuristic(HEURISTIC h);
-
-  bool astar1();
 };
 
 #endif

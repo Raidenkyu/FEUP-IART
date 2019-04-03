@@ -79,7 +79,6 @@ void Game::menu()
                 cout << "Choose the heristic" << endl;
                 cout << "0 - Optimistic" << endl;
                 cout << "1 - Realistic" << endl;
-                cout << "2 - Smarter" << endl;
                 cout << endl << "Heuristic: ";
                 cin >> heuristicChoice;
                 AI::setHeuristic((HEURISTIC)heuristicChoice);
