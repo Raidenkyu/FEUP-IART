@@ -7,47 +7,126 @@ from tensorflow import keras
 # Bibliotecas de ajuda
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 import os
 
-
-tf.enable_eager_execution()
+loss_object = tf.keras.losses.SparseCategoricalCrossentropy(
+    from_logits=True)
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 
-def parseLine(drugNum, drugName, condition, review, rating, date, usefulCount):
-    COLUMNS = ['drugNum', 'drugName', 'condition',
-               'review', 'rating',
-               'date', 'usefulCount']
+def getDatabase(datasetFile, columns, label):
+    folderPath = Path("res/")
 
-    features = dict(
-        zip(COLUMNS, [drugNum, drugName, condition, review, rating, date, usefulCount]))
+    filePath = str(folderPath / datasetFile)
 
-    return features
+    column_defaults = [tf.float32, tf.float32, tf.float32, tf.float32]
+
+    for i in range(1, 114):
+        column_defaults.append(tf.float32)
+
+    batch_size = 32
+
+    dataset = tf.data.experimental.make_csv_dataset(
+        filePath,
+        batch_size,
+        column_names=columns,
+        column_defaults=column_defaults,
+        label_name=label,
+        num_epochs=1)
+
+    return dataset
 
 
-def parseFile(filename):
-    dataset = tf.data.experimental.CsvDataset(
-        filenames=filename,
-        record_defaults=[0, "", "",
-                         "", 0.0, "", 0],
-        field_delim="\t",
-        header=True)
-    return dataset.map(parseLine)
+def pack_features_vector(features, labels):
+    """Pack the features into a single array."""
+    features = tf.stack(list(features.values()), axis=1)
+    return features, labels
+
+
+def getModel():
+    model = tf.keras.Sequential([
+        tf.keras.layers.Dense(32, activation=tf.nn.relu,
+                              input_shape=(116,)),  # input shape required
+        tf.keras.layers.Dense(32, activation=tf.nn.relu),
+        tf.keras.layers.Dense(2)
+    ])
+
+    return model
+
+
+def loss(model, x, y):
+
+    y_ = model(x)
+
+    return loss_object(y_true=y, y_pred=y_)
+
+
+def grad(model, inputs, targets):
+    with tf.GradientTape() as tape:
+        loss_value = loss(model, inputs, targets)
+    return loss_value, tape.gradient(loss_value, model.trainable_variables)
 
 
 def main():
     print("TensorFlow Version: " + tf.__version__)
 
-    filename = 'drugsComTrain_raw.tsv'
+    trainFile = 'dota2Train.csv'
+    testFile = 'dota2Test.csv'
 
-    dataset = parseFile(filename)
+    columns = ['won_game', 'location_id', 'game_mode', 'game_type']
+
+    for i in range(1, 114):
+        columns.append('hero'+str(i))
+
+    label = columns[0]
+    features = columns.copy()
+    features.pop(0)
+
+    class_values = [-1, 1]
+
+    train_dataset = getDatabase(trainFile, columns, label)
+    train_dataset = train_dataset.map(pack_features_vector)
+
+    model = getModel()
+
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
+
+    features, labels = next(iter(train_dataset))
+
+    # keep results for plotting
+    train_loss_results = []
+    train_accuracy_results = []
+
+    num_epochs = 201
+
+    for epoch in range(num_epochs):
+        epoch_loss_avg = tf.keras.metrics.Mean()
+        epoch_accuracy = tf.keras.metrics.SparseCategoricalAccuracy()
+
+        # Training loop - using batches of 32
+        for x, y in train_dataset:
+            # Optimize the model
+
+            #loss_value, grads = grad(model, x, y)
+            #optimizer.apply_gradients(zip(grads, model.trainable_variables))
+
+            # Track progress
+            # epoch_loss_avg(loss_value)  # add current batch loss
+            # compare predicted label to actual label
+            epoch_accuracy(y, model(x))
+
+        # end epoch
+        # train_loss_results.append(epoch_loss_avg.result())
+        train_accuracy_results.append(epoch_accuracy.result())
+
+        if epoch % 50 == 0:
+            print("Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}".format(epoch,
+                                                                        epoch_loss_avg.result(),
+                                                                        epoch_accuracy.result()))
 
 
-'''
-    for data in dataset:
-        tf.print(data)
-'''
-
-main()
+if __name__ == "__main__":
+    main()
