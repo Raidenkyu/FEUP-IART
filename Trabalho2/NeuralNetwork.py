@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # TensorFlow e tf.keras
 import tensorflow as tf
 from tensorflow import keras
-
+from sklearn import preprocessing
 # Bibliotecas de ajuda
 import numpy as np
 import matplotlib.pyplot as plt
@@ -53,6 +53,8 @@ def getModel():
         tf.keras.layers.Dense(32, activation=tf.nn.relu),
         tf.keras.layers.Dense(2)
     ])
+    # model.compile(loss='categorical_crossentropy',
+    #             optimizer='adam', metrics=['accuracy'])
 
     return model
 
@@ -94,13 +96,15 @@ def main():
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
 
-    features, labels = next(iter(train_dataset))
-
     # keep results for plotting
     train_loss_results = []
     train_accuracy_results = []
 
     num_epochs = 201
+
+    features, labels = next(iter(train_dataset))
+    le = preprocessing.LabelEncoder()
+    le.fit(labels)
 
     for epoch in range(num_epochs):
         epoch_loss_avg = tf.keras.metrics.Mean()
@@ -109,12 +113,12 @@ def main():
         # Training loop - using batches of 32
         for x, y in train_dataset:
             # Optimize the model
-
-            #loss_value, grads = grad(model, x, y)
-            #optimizer.apply_gradients(zip(grads, model.trainable_variables))
+            y = le.transform(y)
+            loss_value, grads = grad(model, x, y)
+            optimizer.apply_gradients(zip(grads, model.trainable_variables))
 
             # Track progress
-            # epoch_loss_avg(loss_value)  # add current batch loss
+            epoch_loss_avg(loss_value)  # add current batch loss
             # compare predicted label to actual label
             epoch_accuracy(y, model(x))
 
