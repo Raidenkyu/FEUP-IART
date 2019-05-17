@@ -53,8 +53,6 @@ def getModel():
         tf.keras.layers.Dense(32, activation=tf.nn.relu),
         tf.keras.layers.Dense(2)
     ])
-    # model.compile(loss='categorical_crossentropy',
-    #             optimizer='adam', metrics=['accuracy'])
 
     return model
 
@@ -123,7 +121,7 @@ def main():
             epoch_accuracy(y, model(x))
 
         # end epoch
-        # train_loss_results.append(epoch_loss_avg.result())
+        train_loss_results.append(epoch_loss_avg.result())
         train_accuracy_results.append(epoch_accuracy.result())
 
         if epoch % 50 == 0:
