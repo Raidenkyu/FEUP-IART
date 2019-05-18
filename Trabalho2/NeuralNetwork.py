@@ -3,11 +3,13 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 # TensorFlow e tf.keras
 import tensorflow as tf
 from tensorflow import keras
-from sklearn import preprocessing
+
 # Bibliotecas de ajuda
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
+import timeit
+from sklearn import preprocessing
 
 import os
 
@@ -37,6 +39,7 @@ def getDatabase(datasetFile, columns, label):
         label_name=label,
         num_epochs=1)
 
+    dataset = dataset.map(pack_features_vector)
     return dataset
 
 
@@ -70,6 +73,13 @@ def grad(model, inputs, targets):
     return loss_value, tape.gradient(loss_value, model.trainable_variables)
 
 
+def getTransform(dataset):
+    features, labels = next(iter(dataset))
+    le = preprocessing.LabelEncoder()
+    le.fit(labels)
+    return le
+
+
 def main():
     print("TensorFlow Version: " + tf.__version__)
 
@@ -88,11 +98,12 @@ def main():
     class_values = [-1, 1]
 
     train_dataset = getDatabase(trainFile, columns, label)
-    train_dataset = train_dataset.map(pack_features_vector)
 
     model = getModel()
 
     optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
+
+    le = getTransform(train_dataset)
 
     # keep results for plotting
     train_loss_results = []
@@ -100,10 +111,7 @@ def main():
 
     num_epochs = 201
 
-    features, labels = next(iter(train_dataset))
-    le = preprocessing.LabelEncoder()
-    le.fit(labels)
-
+    start = timeit.timeit()
     for epoch in range(num_epochs):
         epoch_loss_avg = tf.keras.metrics.Mean()
         epoch_accuracy = tf.keras.metrics.SparseCategoricalAccuracy()
@@ -118,6 +126,7 @@ def main():
             # Track progress
             epoch_loss_avg(loss_value)  # add current batch loss
             # compare predicted label to actual label
+
             epoch_accuracy(y, model(x))
 
         # end epoch
@@ -128,6 +137,21 @@ def main():
             print("Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}".format(epoch,
                                                                         epoch_loss_avg.result(),
                                                                         epoch_accuracy.result()))
+
+    end = timeit.timeit()
+    print("Training took {} seconds".format(end-start))
+
+    test_dataset = getDatabase(testFile, columns, label)
+
+    test_accuracy = tf.keras.metrics.Accuracy()
+
+    for (x, y) in test_dataset:
+        y = le.transform(y)
+        logits = model(x)
+        prediction = tf.argmax(logits, axis=1, output_type=tf.int32)
+        test_accuracy(prediction, y)
+
+    print("Test set accuracy: {:.3%}".format(test_accuracy.result()))
 
 
 if __name__ == "__main__":
