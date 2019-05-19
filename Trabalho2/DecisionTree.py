@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import classification_report, confusion_matrix
+import time
 
 
 def getDataset(filename, columns):
@@ -30,7 +31,10 @@ def main():
     x_test, y_test, test_dataset = getDataset(testFile, columns)
 
     classifier = DecisionTreeClassifier()
+    print("Start Training")
+    start = time.time()
     classifier.fit(x_train, y_train)
+    print("Training finished in {} seconds".format(time.time()-start))
 
     y_pred = classifier.predict(x_test)
 

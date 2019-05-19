@@ -8,7 +8,7 @@ from tensorflow import keras
 import numpy as np
 import matplotlib.pyplot as plt
 from pathlib import Path
-import timeit
+import time
 from sklearn import preprocessing
 
 import os
@@ -101,7 +101,7 @@ def main():
 
     model = getModel()
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
 
     le = getTransform(train_dataset)
 
@@ -111,7 +111,7 @@ def main():
 
     num_epochs = 201
 
-    start = timeit.timeit()
+    start = time.time()
     for epoch in range(num_epochs):
         epoch_loss_avg = tf.keras.metrics.Mean()
         epoch_accuracy = tf.keras.metrics.SparseCategoricalAccuracy()
@@ -138,7 +138,7 @@ def main():
                                                                         epoch_loss_avg.result(),
                                                                         epoch_accuracy.result()))
 
-    end = timeit.timeit()
+    end = time.time()
     print("Training took {} seconds".format(end-start))
 
     test_dataset = getDatabase(testFile, columns, label)
