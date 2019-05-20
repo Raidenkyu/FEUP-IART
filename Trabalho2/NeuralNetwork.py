@@ -73,8 +73,7 @@ def grad(model, inputs, targets):
     return loss_value, tape.gradient(loss_value, model.trainable_variables)
 
 
-def getTransform(dataset):
-    features, labels = next(iter(dataset))
+def getTransform(labels):
     le = preprocessing.LabelEncoder()
     le.fit(labels)
     return le
@@ -101,9 +100,9 @@ def main():
 
     model = getModel()
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
 
-    le = getTransform(train_dataset)
+    le = getTransform(class_values)
 
     # keep results for plotting
     train_loss_results = []
