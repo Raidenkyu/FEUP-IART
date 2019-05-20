@@ -18,12 +18,10 @@ loss_object = tf.keras.losses.SparseCategoricalCrossentropy(
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+STOP_THREAD = False
 
-def getDatabase(datasetFile, columns, label):
-    folderPath = Path("res/")
 
-    filePath = str(folderPath / datasetFile)
-
+def getDatabase(filePath, columns, label):
     column_defaults = [tf.float32, tf.float32, tf.float32, tf.float32]
 
     for i in range(1, 114):
@@ -79,11 +77,8 @@ def getTransform(labels):
     return le
 
 
-def main():
-    print("TensorFlow Version: " + tf.__version__)
-
-    trainFile = 'dota2Train.csv'
-    testFile = 'dota2Test.csv'
+def NeuralNetwork(window, trainFile, testFile):
+    window.print("TensorFlow Version: " + tf.__version__)
 
     columns = ['won_game', 'location_id', 'game_mode', 'game_type']
 
@@ -117,6 +112,10 @@ def main():
 
         # Training loop - using batches of 32
         for x, y in train_dataset:
+
+            if window.STOP_THREAD:
+                return
+
             # Optimize the model
             y = le.transform(y)
             loss_value, grads = grad(model, x, y)
@@ -132,13 +131,15 @@ def main():
         train_loss_results.append(epoch_loss_avg.result())
         train_accuracy_results.append(epoch_accuracy.result())
 
+        window.plot(train_loss_results, train_accuracy_results)
+
         if epoch % 50 == 0:
-            print("Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}".format(epoch,
-                                                                        epoch_loss_avg.result(),
-                                                                        epoch_accuracy.result()))
+            window.print("Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}".format(epoch,
+                                                                               epoch_loss_avg.result(),
+                                                                               epoch_accuracy.result()))
 
     end = time.time()
-    print("Training took {} seconds".format(end-start))
+    window.print("Training took {} seconds".format(end-start))
 
     test_dataset = getDatabase(testFile, columns, label)
 
@@ -150,8 +151,4 @@ def main():
         prediction = tf.argmax(logits, axis=1, output_type=tf.int32)
         test_accuracy(prediction, y)
 
-    print("Test set accuracy: {:.3%}".format(test_accuracy.result()))
-
-
-if __name__ == "__main__":
-    main()
+    window.print("Test set accuracy: {:.3%}".format(test_accuracy.result()))
