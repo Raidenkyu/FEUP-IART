@@ -12,24 +12,22 @@ from tensorflow import keras
 
 from pathlib import Path
 
-def main():
-    print("TensorFlow Version: " + tf.__version__)
+def knn_main(window, trainPath, testPath):
+    window.print("TensorFlow Version: " + tf.__version__)
 
-    trainFile = 'dota2Train.csv'
-    folderPath = Path("res/")
-    filePath = str(folderPath / trainFile)
 
     # Assign colum names to the dataset
     columns = ['won_game', 'location_id', 'game_mode', 'game_type']
     for i in range(1, 114):
             columns.append('hero'+str(i))
 
-    dataset = pd.read_csv(filePath, names=columns) 
+    train_dataset = pd.read_csv(trainPath, names=columns) 
+    test_dataset = pd.read_csv(testPath, names=columns) 
 
-    X = dataset.iloc[:, :-1].values  
-    y = dataset.iloc[:, 116].values   
-
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20) 
+    X_test = test_dataset.iloc[:, :-1].values  
+    y_test = test_dataset.iloc[:, 116].values  
+    X_train = train_dataset.iloc[:, :-1].values  
+    y_train = train_dataset.iloc[:, 116].values    
 
     scaler = StandardScaler()  
     scaler.fit(X_train)
@@ -59,6 +57,3 @@ def main():
     plt.title('Error Rate K Value')  
     plt.xlabel('K Value')  
     plt.ylabel('Mean Error')  
-
-if __name__ == "__main__":
-    main()
