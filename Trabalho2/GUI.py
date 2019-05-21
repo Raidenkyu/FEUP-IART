@@ -3,6 +3,8 @@ from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from NeuralNetwork import NeuralNetwork
+from KNearestNeighbor import knn_main
+from SVM import svm_main
 from tkinter import Tk, Label, Button, Entry, StringVar, DISABLED, NORMAL, END, W, E, LEFT, filedialog, Toplevel, Text
 import random
 import matplotlib
@@ -53,12 +55,17 @@ class MainWindow:
             self.master, text="KNN", command=self.KNN)
         self.KNNButton.grid(row=6, column=1)
 
+        self.SVMButton = Button(
+            self.master, text="SVM", command=self.KNN)
+        self.SVMButton.grid(row=7, column=1)
+
         self.C4dot5Button = Button(
             self.master, text="C4.5", command=self.C4dot5)
-        self.C4dot5Button.grid(row=7, column=1)
+        self.C4dot5Button.grid(row=8, column=1)
 
     def run(self):
         self.master.mainloop()
+
 
     def startNeuralNetwork(self):
         win = AlgorithmWindow(self)
@@ -66,7 +73,14 @@ class MainWindow:
                                                                    self.test_file_path.get())))
 
     def KNN(self):
-        print("KNN")
+        win = AlgorithmWindow(self)
+        win.startTask(threading.Thread(target=knn_main, args=(win, self.train_file_path.get(),
+                                                                   self.test_file_path.get())))
+
+    def SVM(self):
+        win = AlgorithmWindow(self)
+        win.startTask(threading.Thread(target=svm_main, args=(win, self.train_file_path.get(),
+                                                                   self.test_file_path.get())))
 
     def C4dot5(self):
         print("c4.5")
