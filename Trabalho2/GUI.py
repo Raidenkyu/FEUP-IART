@@ -136,8 +136,8 @@ class AlgorithmWindow:
         # Tell Tkinter to display matplotlib figure
         self.canvas1 = FigureCanvasTkAgg(self.f1, master=self.master)
         self.canvas2 = FigureCanvasTkAgg(self.f2, master=self.master)
-        self.canvas1.get_tk_widget().grid(row=1)
-        self.canvas1.get_tk_widget().grid(row=1)
+        self.canvas1.get_tk_widget().grid(row=1,column=0)
+        self.canvas2.get_tk_widget().grid(row=1,column=1)
         self.canvas1.draw()
         self.canvas2.draw()
 

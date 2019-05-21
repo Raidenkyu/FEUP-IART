@@ -27,7 +27,7 @@ def getDatabase(filePath, columns, label):
     for i in range(1, 114):
         column_defaults.append(tf.float32)
 
-    batch_size = 32
+    batch_size = 128
 
     dataset = tf.data.experimental.make_csv_dataset(
         filePath,
@@ -49,9 +49,9 @@ def pack_features_vector(features, labels):
 
 def getModel():
     model = tf.keras.Sequential([
-        tf.keras.layers.Dense(32, activation=tf.nn.relu,
+        tf.keras.layers.Dense(16, activation=tf.nn.relu,
                               input_shape=(116,)),  # input shape required
-        tf.keras.layers.Dense(32, activation=tf.nn.relu),
+        tf.keras.layers.Dense(16, activation=tf.nn.relu),
         tf.keras.layers.Dense(2)
     ])
 
@@ -133,10 +133,9 @@ def NeuralNetwork(window, trainFile, testFile):
 
         window.plot(train_loss_results, train_accuracy_results)
 
-        if epoch % 50 == 0:
-            window.print("Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}".format(epoch,
-                                                                               epoch_loss_avg.result(),
-                                                                               epoch_accuracy.result()))
+        window.print("Epoch {:03d}: Loss: {:.3f}, Accuracy: {:.3%}".format(epoch,
+                                                                           epoch_loss_avg.result(),
+                                                                           epoch_accuracy.result()))
 
     end = time.time()
     window.print("Training took {} seconds".format(end-start))
