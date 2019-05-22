@@ -1,5 +1,7 @@
 import threading
+from queue import Queue
 from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from NeuralNetwork import NeuralNetwork
@@ -14,7 +16,7 @@ matplotlib.use('TkAgg')
 class MainWindow:
     def __init__(self):
         self.master = Tk()
-
+        self.master.protocol("WM_DELETE_WINDOW", self.quit)
         self.master.geometry("500x300")
         self.master.resizable(0, 0)
 
@@ -66,7 +68,6 @@ class MainWindow:
     def run(self):
         self.master.mainloop()
 
-
     def startNeuralNetwork(self):
         win = AlgorithmWindow(self)
         win.startTask(threading.Thread(target=NeuralNetwork, args=(win, self.train_file_path.get(),
@@ -75,12 +76,12 @@ class MainWindow:
     def KNN(self):
         win = AlgorithmWindow(self)
         win.startTask(threading.Thread(target=knn_main, args=(win, self.train_file_path.get(),
-                                                                   self.test_file_path.get())))
+                                                              self.test_file_path.get())))
 
     def SVM(self):
         win = AlgorithmWindow(self)
         win.startTask(threading.Thread(target=svm_main, args=(win, self.train_file_path.get(),
-                                                                   self.test_file_path.get())))
+                                                              self.test_file_path.get())))
 
     def C4dot5(self):
         print("c4.5")
@@ -100,16 +101,21 @@ class MainWindow:
         self.master.update()
         self.master.deiconify()
 
+    def quit(self):
+        self.master.quit()
+        self.master.destroy()
+
 
 class AlgorithmWindow:
     def __init__(self, parent):
         self.STOP_THREAD = False
-        self.task = threading.Thread()
+        self.plots = Queue()
+        self.task = threading.Event()
         self.master = Toplevel()
         self.parent = parent
         self.parent.hide()
         self.master.protocol("WM_DELETE_WINDOW", self.returnMain)
-        self.master.geometry("500x500")
+        self.master.geometry("600x680")
         self.master.resizable(0, 0)
 
         self.master.title("Deep Learning")
@@ -133,37 +139,41 @@ class AlgorithmWindow:
         self.STOP_THREAD = True
         self.task.join()
         self.parent.show()
+        self.parent.master.after_cancel(self._afterJob)
         self.master.destroy()
 
     def setCanvas(self):
-        self.traces = dict()
-
-        # Define matplotlib figure
-        self.f1 = Figure(figsize=(3, 3), dpi=100)
-        self.f2 = Figure(figsize=(3, 3), dpi=100)
-        self.axis1 = self.f1.add_subplot(111)
-        self.axis2 = self.f2.add_subplot(111)
-        self.axis1.set_ylabel("Loss")
-        self.axis2.set_xlabel("Epoch")
-        self.axis2.set_ylabel("Accuracy")
-
+        fig, axes = plt.subplots(2, sharex=True, figsize=(5, 5))
+        self.axes = axes
         # Tell Tkinter to display matplotlib figure
-        self.canvas1 = FigureCanvasTkAgg(self.f1, master=self.master)
-        self.canvas2 = FigureCanvasTkAgg(self.f2, master=self.master)
-        self.canvas1.get_tk_widget().grid(row=1,column=0)
-        self.canvas2.get_tk_widget().grid(row=1,column=1)
-        self.canvas1.draw()
-        self.canvas2.draw()
+        self.canvas = FigureCanvasTkAgg(fig, master=self.master)
+        self.canvas.get_tk_widget().grid(row=1, column=0)
+
+        fig.suptitle('Training Metrics')
+
+        axes[0].set_ylabel("Loss", fontsize=14)
+        axes[0].plot([])
+
+        axes[1].set_ylabel("Accuracy", fontsize=14)
+        axes[1].set_xlabel("Epoch", fontsize=14)
+        axes[1].plot([])
+        self.canvas.draw()
+        self.updatePlot()
 
     def plot(self, train_loss_results, train_accuracy_results):
-        self.axis1.plot(train_loss_results)
-        self.axis2.plot(train_accuracy_results)
+        self.plots.put([train_loss_results, train_accuracy_results])
+
+    def updatePlot(self):
+        try:  # Try to check if there is data in the queue
+            result = self.plots.get_nowait()
+            self.axes[0].plot(result[0])
+            self.axes[1].plot(result[1])
+            self.canvas.draw()
+            self._afterJob = self.parent.master.after(500, self.updatePlot)
+        except:
+            self._afterJob = self.parent.master.after(500, self.updatePlot)
 
 
-def main():
+def runApp():
     app = MainWindow()
     app.run()
-
-
-if __name__ == "__main__":
-    main()
