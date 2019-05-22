@@ -27,7 +27,7 @@ def getDatabase(filePath, columns, label):
     for i in range(1, 114):
         column_defaults.append(tf.float32)
 
-    batch_size = 128
+    batch_size = 32
 
     dataset = tf.data.experimental.make_csv_dataset(
         filePath,
@@ -51,7 +51,9 @@ def getModel():
     model = tf.keras.Sequential([
         tf.keras.layers.Dense(116, activation=tf.nn.relu,
                               input_shape=(116,)),  # input shape required
-        tf.keras.layers.Dense(200, activation=tf.nn.relu),
+        tf.keras.layers.Dense(256, activation=tf.nn.relu),
+        tf.keras.layers.Dense(128, activation=tf.nn.relu),
+        tf.keras.layers.Dense(64, activation=tf.nn.relu),
         tf.keras.layers.Dense(2)
     ])
 
@@ -95,7 +97,7 @@ def NeuralNetwork(window, trainFile, testFile):
 
     model = getModel()
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.01)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
 
     le = getTransform(class_values)
 
