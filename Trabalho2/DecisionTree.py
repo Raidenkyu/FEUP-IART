@@ -8,19 +8,15 @@ import time
 
 
 def getDataset(filename, columns):
-    folderPath = Path("res/")
-    filePath = str(folderPath / filename)
-    dataset = pd.read_csv(filePath, names=columns)
+    dataset = pd.read_csv(filename, names=columns)
 
-    X = dataset.iloc[:, :-1].values
-    y = dataset.iloc[:, 116].values
+    y = dataset.iloc[:, 0].values
+    X = dataset.iloc[:, 1:116].values
 
     return X, y, dataset
 
 
-def main():
-    trainFile = 'dota2Train.csv'
-    testFile = 'dota2Test.csv'
+def DecisionTree(window, trainFile, testFile):
 
     # Assign colum names to the dataset
     columns = ['won_game', 'location_id', 'game_mode', 'game_type']
@@ -31,16 +27,16 @@ def main():
     x_test, y_test, test_dataset = getDataset(testFile, columns)
 
     classifier = DecisionTreeClassifier()
-    print("Start Training")
+    window.print("Start Training")
     start = time.time()
     classifier.fit(x_train, y_train)
-    print("Training finished in {} seconds".format(time.time()-start))
+    window.print("Training finished in {} seconds".format(time.time()-start))
 
     y_pred = classifier.predict(x_test)
 
-    print(confusion_matrix(y_test, y_pred))
-    print(classification_report(y_test, y_pred))
+    for i in range(0, len(y_pred)):
+        window.print("Predicted: {}     Real: {}".format(
+            y_pred[i], y_test[i]))
 
-
-if __name__ == "__main__":
-    main()
+    window.print(str(confusion_matrix(y_test, y_pred)))
+    window.print(str(classification_report(y_test, y_pred)))

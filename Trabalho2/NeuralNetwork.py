@@ -49,9 +49,9 @@ def pack_features_vector(features, labels):
 
 def getModel():
     model = tf.keras.Sequential([
-        tf.keras.layers.Dense(16, activation=tf.nn.relu,
+        tf.keras.layers.Dense(116, activation=tf.nn.relu,
                               input_shape=(116,)),  # input shape required
-        tf.keras.layers.Dense(16, activation=tf.nn.relu),
+        tf.keras.layers.Dense(200, activation=tf.nn.relu),
         tf.keras.layers.Dense(2)
     ])
 

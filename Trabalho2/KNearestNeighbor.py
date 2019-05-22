@@ -24,10 +24,10 @@ def knn_main(window, trainPath, testPath):
     train_dataset = pd.read_csv(trainPath, names=columns)
     test_dataset = pd.read_csv(testPath, names=columns)
 
-    X_test = test_dataset.iloc[:, :-1].values
-    y_test = test_dataset.iloc[:, 116].values
-    X_train = train_dataset.iloc[:, :-1].values
-    y_train = train_dataset.iloc[:, 116].values
+    X_test = test_dataset.iloc[:, 1:116].values
+    y_test = test_dataset.iloc[:, 0].values
+    X_train = train_dataset.iloc[:, 1:116].values
+    y_train = train_dataset.iloc[:, 0].values
 
     scaler = StandardScaler()
     scaler.fit(X_train)
@@ -49,6 +49,7 @@ def knn_main(window, trainPath, testPath):
         knn = KNeighborsClassifier(n_neighbors=i)
         knn.fit(X_train, y_train)
         pred_i = knn.predict(X_test)
+        window.print("Predicted: {}     Real: {}".format(pred_i, y_test))
         error.append(np.mean(pred_i != y_test))
 
     plt.figure(figsize=(12, 6))
