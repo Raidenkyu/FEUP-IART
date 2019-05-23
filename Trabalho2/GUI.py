@@ -19,53 +19,53 @@ class MainWindow:
     def __init__(self):
         self.master = Tk()
         self.master.protocol("WM_DELETE_WINDOW", self.quit)
-        self.master.geometry("500x300")
+        self.master.geometry("400x290")
         self.master.resizable(0, 0)
 
         self.master.title("Deep Learning")
         self.title_label = Label(
             self.master, text="Dota2 Victory prevision App")
-        self.title_label.grid(row=0, column=1)
+        self.title_label.grid(row=0, padx=(100, 20), pady=10)
 
         self.train_file_label = Label(
             self.master, text="Train File Path", justify=LEFT)
-        self.train_file_label.grid(row=1)
+        self.train_file_label.grid(row=1, padx=(100, 20))
 
         self.train_file_path = Entry(self.master)
-        self.train_file_path.grid(row=2, column=0)
+        self.train_file_path.grid(row=2, padx=(100, 0), sticky=W)
 
         self.train_file_browse = Button(
-            self.master, text="Browser", command=self.browseTrain)
+            self.master, text="Browse", command=self.browseTrain)
 
-        self.train_file_browse.grid(row=2, column=1)
+        self.train_file_browse.grid(row=2, padx=(100, 0), sticky=E)
 
         self.test_file_label = Label(
             self.master, text="Test File Path", justify=LEFT)
-        self.test_file_label.grid(row=3)
+        self.test_file_label.grid(row=3, padx=(100, 0))
 
         self.test_file_path = Entry(self.master)
-        self.test_file_path.grid(row=4, column=0)
+        self.test_file_path.grid(row=4,  padx=(100, 0), sticky=W)
 
         self.test_file_browse = Button(
-            self.master, text="Browser", command=self.browseTest)
+            self.master, text="Browse", command=self.browseTest)
 
-        self.test_file_browse.grid(row=4, column=1)
+        self.test_file_browse.grid(row=4, padx=(100, 0), sticky=E)
 
         self.NeuralNetworkButton = Button(
             self.master, text="Neural Network", command=self.startNeuralNetwork)
-        self.NeuralNetworkButton.grid(row=5, column=1)
+        self.NeuralNetworkButton.grid(row=5, padx=(100, 0), pady=1)
 
         self.KNNButton = Button(
             self.master, text="K-Nearest Neighbor", command=self.KNN)
-        self.KNNButton.grid(row=6, column=1)
+        self.KNNButton.grid(row=6, padx=(100, 0), pady=1)
 
         self.SVMButton = Button(
             self.master, text="Support Vector Machine", command=self.KNN)
-        self.SVMButton.grid(row=7, column=1)
+        self.SVMButton.grid(row=7, padx=(100, 0), pady=1)
 
         self.DecisionTreeButton = Button(
             self.master, text="Decision Tree", command=self.startDecisionTree)
-        self.DecisionTreeButton.grid(row=8, column=1)
+        self.DecisionTreeButton.grid(row=8, padx=(100, 0), pady=1)
 
     def run(self):
         self.master.mainloop()
