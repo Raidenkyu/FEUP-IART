@@ -8,14 +8,9 @@ from pathlib import Path
 
 
 def svm_main(window, trainPath, testPath):
-    trainFile = 'dota2Train.csv'
-    testFile = 'dota2Train.csv'
-    folderPath = Path("res/")
-    trainPath = str(folderPath / trainFile)
-    testPath = str(folderPath / testFile)
 
-    bankdata_train = pd.read_csv(trainFile)
-    bankdata_test = pd.read_csv(trainFile)
+    bankdata_train = pd.read_csv(trainPath)
+    bankdata_test = pd.read_csv(trainPath)
 
     bankdata_train.shape
     bankdata_test.shape
